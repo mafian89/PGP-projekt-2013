@@ -1,27 +1,60 @@
 #ifndef RENDERER_H
 #define RENDERER_H
-#include <string>
-#include <exception>
-#include <stdexcept>
-#include <cstdlib>
-#include <sstream>
-#include <stdio.h>
-#include <iostream>
+///////////////////////////////////////////
+// INCLUDES
+///////////////////////////////////////////
+#include "GLSLshader/GLSLShader.h"
+#include "tmp_model/sphere.h"
+#include "camera/controlCamera.h"
+#include "commonIncludes.h"
 
-#include <SDL/SDL.h>
-#include <GL/glew.h>
+#ifdef _MSC_VER
+#pragma comment(lib, "SDL.lib")
+#pragma comment(lib, "OpenGL32.lib")
+#pragma comment(lib, "glew32.lib")
+#pragma comment(lib, "assimp.lib")
+#endif//_MSC_VER
 
+///////////////////////////////////////////
+// DEFINES
+///////////////////////////////////////////
 #define MIN_FRAMETIME_MSECS 15
 #define WINDOW_TITLE "PGP - Projekt 2013 FPS: "
 
+///////////////////////////////////////////
+// FUNCTION PROTOTYPES
+///////////////////////////////////////////
+extern void onInit();
+extern void onWindowResized(unsigned, unsigned);
+
+///////////////////////////////////////////
+// VARIABLES
+///////////////////////////////////////////
+//renderer variables
 unsigned width = 800;
 unsigned height = 600;
 bool useFrameRateCap = true;
 int FPS = 0;
+glm::vec3 lightPosition(.0,10.0,.0);
+//shader variables
+string shaderDir = "../src/shaders/";
+GLSLShader simpleShader;
+//Camera variables
+CControlCamera* controlCamera = new CControlCamera();
+float mouseSpeed =  0.05f;
+int _x,_y;
+bool moved = true;
+float movementSpeed = 0.75f;
 
-extern void onInit();
-extern void onWindowResized(unsigned, unsigned);
+///////////////////////////////////////////
+// TMP MODEL VARIABLES
+///////////////////////////////////////////
+GLuint sphereVBO;
+GLuint sphereEBO;
 
+///////////////////////////////////////////
+// FUNCTIONS
+///////////////////////////////////////////
 struct SDL_Exception : public std::runtime_error
 {
     SDL_Exception() throw()
@@ -56,5 +89,6 @@ SDL_Surface * init(unsigned width, unsigned height, unsigned color, unsigned dep
 }
 //error LNK2019: unresolved external symbol _main referenced in function ___tmainCRTStartup
 #undef main
+//or use sdlmain.lib
 
 #endif

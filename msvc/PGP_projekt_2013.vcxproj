@@ -57,7 +57,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL.lib;glew32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL.lib;glew32.lib;OpenGL32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
@@ -79,11 +79,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\camera\controlCamera.cpp" />
+    <ClCompile Include="..\src\GLSLshader\GLSLShader.cpp" />
     <ClCompile Include="..\src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\camera\controlCamera.h" />
+    <ClInclude Include="..\src\commonIncludes.h" />
+    <ClInclude Include="..\src\GLSLshader\GLSLShader.h" />
     <ClInclude Include="..\src\Renderer.h" />
     <ClInclude Include="..\src\Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\shaders\simpleShader.fp" />
+    <None Include="..\src\shaders\simpleShader.vp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
