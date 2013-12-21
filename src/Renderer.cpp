@@ -38,10 +38,14 @@ void onWindowResized(unsigned w, unsigned h){
 // RENDER SCENE
 ////////////////////////////////////////////////////
 void Render(){
-	//std::cout<<FPS<<std::endl;
+	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	//Cleat color
     glClearColor(0.6,0.6,0.6,1.0);
+	//Enable depth testing
     glEnable( GL_DEPTH_TEST );
+
+	//Swap buffers
 	SDL_GL_SwapBuffers();
 }
 
@@ -52,19 +56,19 @@ int main(int argc, char** argv) {
 	SDL_Surface *screen;
 	int done;
 	Uint8 *keys;
-	// Initialize
+	//Initialize
 	if(SDL_Init(SDL_INIT_VIDEO)< 0) throw SDL_Exception();
-	// Create a OpenGL window
+	//Create a OpenGL window
 	screen = init(width,height,24,24,8);
 	SDL_WM_SetCaption(WINDOW_TITLE, WINDOW_TITLE);
-	// ##### INSERT ANY ARGUMENT (PARAMETER) PARSING CODE HERE
+	//##### INSERT ANY ARGUMENT (PARAMETER) PARSING CODE HERE
 
 	const int FPS_limit = 60;
-    Uint32 start;
+	Uint32 start;
 
 	Timer myTimer;
-    Timer fps;
-    Timer update;
+	Timer fps;
+	Timer update;
 
 	// The main loop
 	done = 0;
@@ -75,7 +79,7 @@ int main(int argc, char** argv) {
 	{
 		SDL_Event event;
 		myTimer.start();
-		// Respond to any events that occur
+		//Respond to any events that occur
 		while(SDL_PollEvent(&event))
 		{
 			switch(event.type) 
@@ -92,7 +96,7 @@ int main(int argc, char** argv) {
 			}
 		}
 
-		// Check for escape
+		//Check for escape
 		keys = SDL_GetKeyState(NULL);
 		if( keys[SDLK_ESCAPE] ) {
 			done = 1;
