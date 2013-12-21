@@ -3,8 +3,6 @@
 ///////////////////////////////////////////
 // INCLUDES
 ///////////////////////////////////////////
-#include <SDL/SDL.h>
-#include <GL/glew.h>
 #include "GLSLshader/GLSLShader.h"
 #include "tmp_model/sphere.h"
 #include "camera/controlCamera.h"
@@ -38,7 +36,10 @@ bool useFrameRateCap = true;
 int FPS = 0;
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
-CControlCamera controlCamera;
+CControlCamera* controlCamera = new CControlCamera();
+float mouseSpeed =  0.05f;
+int _x,_y;
+bool moved = true;
 
 ///////////////////////////////////////////
 // TMP MODEL VARIABLES

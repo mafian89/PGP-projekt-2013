@@ -30,6 +30,8 @@ class CControlCamera {
 		unsigned height;
 		float near_clip_plane;
 		float far_clip_plane;
+		int _x,_y;
+		Uint8 *keys;
 	public:
 		CControlCamera();
 		~CControlCamera();
@@ -46,6 +48,8 @@ class CControlCamera {
 		float getInitialHorizontalAngle();
 		float getVerticalAngle();
 		float getInitialVerticalAngle();
+		float mouseSpeed;
+		bool moved;
 
 		//--Settery
 		void setHorizontalAngle(float);

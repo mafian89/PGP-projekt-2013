@@ -84,22 +84,35 @@ void CControlCamera::initControlCamera(glm::vec3 _pos, float _horAngle = 3.14f, 
 	this->height = _height;
 	this->far_clip_plane = fcp;
 	this->near_clip_plane = ncp;
+	this->mouseSpeed = 0.0005;
+	this->moved = false;
 }
 
 void CControlCamera::computeMatricesFromInputs(void){
+		if(moved) {
+			SDL_GetMouseState(&_x,&_y); 
+			SDL_WarpMouse((Uint16)(width/2),(Uint16)(height/2));
+			this->horizontalAngle += this->mouseSpeed *  (float(this->width/2) - float(this->_x));
+			this->verticalAngle += + this->mouseSpeed*  (float(this->height/2) - float(this->_y));
+			if(this->verticalAngle >= 3.14f/2.0f){
+				this->verticalAngle = (3.14f/2.0f);
+			} else if(verticalAngle <= (-3.14f/2.0f)){
+				this->verticalAngle = (-3.14f/2.0f);
+			}
+		}
         // Direction : Spherical coordinates to Cartesian coordinates conversion
         //Viz http://www.lighthouse3d.com/wp-content/uploads/2011/04/vfpoints2.gif
         this->direction = glm::vec3(
-                cos(verticalAngle) * sin(horizontalAngle), 
-                sin(verticalAngle),
-                cos(verticalAngle) * cos(horizontalAngle)
+                cos(this->verticalAngle) * sin(this->horizontalAngle), 
+                sin(this->verticalAngle),
+                cos(this->verticalAngle) * cos(this->horizontalAngle)
         );
         
         // Right vector
         this->right = glm::vec3(
-                sin(horizontalAngle - 3.14f/2.0f), 
+                sin(this->horizontalAngle - 3.14f/2.0f), 
                 0,
-                cos(horizontalAngle - 3.14f/2.0f)
+                cos(this->horizontalAngle - 3.14f/2.0f)
         );
         
         // Up vector - cross produktem dostanu kolmý vektor na tyto dva
@@ -116,9 +129,9 @@ void CControlCamera::computeMatricesFromInputs(void){
 		this->ProjectionMatrix = glm::perspective(fov, aspec, this->near_clip_plane, this->far_clip_plane);
         // Camera matrix
         this->ViewMatrix       = glm::lookAt(
-												position,           
-												position+direction,
-												up                 
+												this->position,           
+												this->position+this->direction,
+												this->up                 
 											);
 //        ViewMatrix = glm::rotate(ViewMatrix, -90.0f, glm::vec3(1,0,0)); 
         
