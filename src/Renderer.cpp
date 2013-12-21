@@ -30,8 +30,8 @@ void onInit() {
 // FUNCTION FOR WINDOW RESIZE EVENT
 ////////////////////////////////////////////////////
 void onWindowResized(unsigned w, unsigned h){
-    width = w; height = h;
-    glViewport(0, 0, w, h);
+	width = w; height = h;
+	glViewport(0, 0, w, h);
 }
 
 ////////////////////////////////////////////////////
@@ -41,9 +41,9 @@ void Render(){
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	//Cleat color
-    glClearColor(0.6,0.6,0.6,1.0);
+	glClearColor(0.6,0.6,0.6,1.0);
 	//Enable depth testing
-    glEnable( GL_DEPTH_TEST );
+	glEnable( GL_DEPTH_TEST );
 
 	//Swap buffers
 	SDL_GL_SwapBuffers();
@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
 
 	// The main loop
 	done = 0;
-    update.start();
-    fps.start();
+	update.start();
+	fps.start();
 
 	while(!done) 
 	{
@@ -109,20 +109,20 @@ int main(int argc, char** argv) {
 		/*
 		* Pøevzato z: http://www.lazyfoo.net/SDL_tutorials/lesson15/index.php
 		*/
-        if( update.get_ticks() > 100 )
-        {
-            //std::cout << "Average Frames Per Second: " << FPS / ( fps.get_ticks() / 1000.f )<<std::endl;
-            std::stringstream caption;
-            caption << WINDOW_TITLE << " FPS: " << FPS / ( fps.get_ticks() / 1000.f );
-            SDL_WM_SetCaption( caption.str().c_str(), NULL );
-            update.start();
-        }
+		if( update.get_ticks() > 100 )
+		{
+			//std::cout << "Average Frames Per Second: " << FPS / ( fps.get_ticks() / 1000.f )<<std::endl;
+			std::stringstream caption;
+			caption << WINDOW_TITLE << " FPS: " << FPS / ( fps.get_ticks() / 1000.f );
+			SDL_WM_SetCaption( caption.str().c_str(), NULL );
+			update.start();
+		}
 		if((useFrameRateCap) && myTimer.get_ticks() < 1000 / FPS_limit ) {
 			SDL_Delay(( 1000 / FPS_limit ) - myTimer.get_ticks() );
 		}
 	}
 
-  // Clean up and quit
-  SDL_Quit();
-  return 0;
+	// Clean up and quit
+	SDL_Quit();
+	return 0;
 }
