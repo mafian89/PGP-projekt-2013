@@ -23,6 +23,14 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
 	////////////////////////////////////////////////////
+	//Sphere
+	glGenBuffers(1, &sphereVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(sphereVertices), sphereVertices, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &sphereEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphere), sphere, GL_STATIC_DRAW);
 }
 
 

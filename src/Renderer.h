@@ -3,17 +3,13 @@
 ///////////////////////////////////////////
 // INCLUDES
 ///////////////////////////////////////////
-#include <string>
-#include <exception>
-#include <stdexcept>
-#include <cstdlib>
-#include <sstream>
-#include <stdio.h>
-#include <iostream>
-
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 #include "GLSLshader/GLSLShader.h"
+#include "tmp_model/sphere.h"
+#include "camera/controlCamera.h"
+#include "commonIncludes.h"
+
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
 #pragma comment(lib, "OpenGL32.lib")
@@ -42,6 +38,13 @@ bool useFrameRateCap = true;
 int FPS = 0;
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
+CControlCamera controlCamera;
+
+///////////////////////////////////////////
+// TMP MODEL VARIABLES
+///////////////////////////////////////////
+GLuint sphereVBO;
+GLuint sphereEBO;
 
 ///////////////////////////////////////////
 // FUNCTIONS

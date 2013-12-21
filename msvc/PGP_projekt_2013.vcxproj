@@ -79,10 +79,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\camera\controlCamera.cpp" />
     <ClCompile Include="..\src\GLSLshader\GLSLShader.cpp" />
     <ClCompile Include="..\src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\camera\controlCamera.h" />
+    <ClInclude Include="..\src\commonIncludes.h" />
     <ClInclude Include="..\src\GLSLshader\GLSLShader.h" />
     <ClInclude Include="..\src\Renderer.h" />
     <ClInclude Include="..\src\Timer.h" />

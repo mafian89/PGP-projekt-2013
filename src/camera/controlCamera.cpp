@@ -1,4 +1,4 @@
-#include "../globals/globals.h"
+#include "controlCamera.h"
 
 CControlCamera::CControlCamera() {
 }
@@ -70,7 +70,8 @@ void CControlCamera::setUp(glm::vec3 _up){
 	this->up;
 }
 
-void CControlCamera::initControlCamera(glm::vec3 _pos, float _horAngle = 3.14f, float _verAngle = 0.0f) {
+void CControlCamera::initControlCamera(glm::vec3 _pos, float _horAngle = 3.14f, float _verAngle = 0.0f, 
+										unsigned _width = 800, unsigned _height = 600, float ncp = 1.0f, float fcp = 100.0) {
     this->position = _pos;
     this->initial_position = this->position;
     this->horizontalAngle = _horAngle;
@@ -78,7 +79,11 @@ void CControlCamera::initControlCamera(glm::vec3 _pos, float _horAngle = 3.14f, 
     this->verticalAngle = _verAngle;
     this->initial_verticalAngle = this->verticalAngle;
     this->fov = 45.0f;
-    this->aspec = (float)width/(float)height;
+    this->aspec = (float)_width/(float)_height;
+	this->width = _width;
+	this->height = _height;
+	this->far_clip_plane = fcp;
+	this->near_clip_plane = ncp;
 }
 
 void CControlCamera::computeMatricesFromInputs(void){
@@ -108,7 +113,7 @@ void CControlCamera::computeMatricesFromInputs(void){
 		std::cout<<"Camera vertical angle: "<<verticalAngle<<std::endl;
 #endif
         this->aspec = (float)width/(float)height;
-        this->ProjectionMatrix = glm::perspective(fov, aspec, (float)NEAR_CLIP_PLANE, (float)FAR_CLIP_PLANE);
+		this->ProjectionMatrix = glm::perspective(fov, aspec, this->near_clip_plane, this->far_clip_plane);
         // Camera matrix
         this->ViewMatrix       = glm::lookAt(
 												position,           

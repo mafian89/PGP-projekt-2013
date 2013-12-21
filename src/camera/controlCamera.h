@@ -9,6 +9,8 @@
 #ifndef CONTROLCAMERA_H
 #define	CONTROLCAMERA_H
 
+#include "../commonIncludes.h"
+
 class CControlCamera {
 	private:
 		glm::mat4 ViewMatrix;
@@ -24,6 +26,10 @@ class CControlCamera {
 		float initial_verticalAngle;
 		float fov;
 		float aspec;
+		unsigned width;
+		unsigned height;
+		float near_clip_plane;
+		float far_clip_plane;
 	public:
 		CControlCamera();
 		~CControlCamera();
@@ -48,7 +54,7 @@ class CControlCamera {
 		void setDirection(glm::vec3);
 		void setUp(glm::vec3);
 
-		void initControlCamera(glm::vec3,float, float);
+		void initControlCamera(glm::vec3,float, float, unsigned, unsigned,float,float);
 		void computeMatricesFromInputs();
 };
 

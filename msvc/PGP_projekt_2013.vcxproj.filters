@@ -16,24 +16,36 @@
     <Filter Include="Source Files\shaders">
       <UniqueIdentifier>{f528673d-bfd7-4b7d-9efe-e073d693e3dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\code">
+      <UniqueIdentifier>{b4a63cad-b8f6-4535-8058-28836bd86a9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Renderer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\code</Filter>
     </ClCompile>
     <ClCompile Include="..\src\GLSLshader\GLSLShader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\camera\controlCamera.cpp">
+      <Filter>Source Files\code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Renderer.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\GLSLshader\GLSLShader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Timer.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\GLSLshader\GLSLShader.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\src\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\camera\controlCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\commonIncludes.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
