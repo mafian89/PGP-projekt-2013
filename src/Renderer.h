@@ -34,6 +34,8 @@ unsigned width = 800;
 unsigned height = 600;
 bool useFrameRateCap = true;
 int FPS = 0;
+string shaderDir = "../src/shaders/";
+GLSLShader simpleShader;
 
 ///////////////////////////////////////////
 // FUNCTIONS

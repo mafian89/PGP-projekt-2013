@@ -2,6 +2,9 @@
 #include "Timer.h"
 
 void onInit() {
+	simpleShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"simpleShader.vp").c_str());
+	simpleShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"simpleShader.fp").c_str());
+	simpleShader.CreateAndLinkProgram();
 }
 
 
