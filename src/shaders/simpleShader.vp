@@ -1,7 +1,17 @@
 #version 150
 in vec3 vPosition;
+in vec3 vNormal;
+
+out vec3 eyePosition,eyeNormal,eyeLightPos;
+
 uniform mat4 mvp;
+uniform mat3 mn;
+uniform mat4 mv;
+uniform vec3 vLightPos;
 
 void main() {
 	gl_Position = mvp*vec4(vPosition, 1.0);
+	eyePosition = (mv*vec4(vPosition,1)).xyz;
+	eyeNormal = normalize(mn*vNormal);
+	eyeLightPos = (mv*vec4(vLightPos,1)).xyz;
 }

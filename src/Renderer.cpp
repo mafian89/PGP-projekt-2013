@@ -17,7 +17,11 @@ void onInit() {
 	////////////////////////////////////////////////////
 	simpleShader.Use();
 		simpleShader.AddAttribute("vPosition");
+		simpleShader.AddAttribute("vNormal");
 		simpleShader.AddUniform("mvp");
+		simpleShader.AddUniform("mv");
+		simpleShader.AddUniform("mn");
+		simpleShader.AddUniform("vLightPos");
 	simpleShader.UnUse();
 
 	////////////////////////////////////////////////////
@@ -64,10 +68,16 @@ void Render(){
 
 	//Draw sphere
 	simpleShader.Use();
+		glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix())));
 		glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix())); 
+		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix())); 
+		glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
+		glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
 		glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
 		glEnableVertexAttribArray(simpleShader["vPosition"]);
 		glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(SphereVertex), (void*)offsetof(SphereVertex, position));
+		glEnableVertexAttribArray(simpleShader["vNormal"]);
+		glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, sizeof(SphereVertex), (void*)offsetof(SphereVertex, normal));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
 	simpleShader.UnUse();
@@ -136,13 +146,13 @@ int main(int argc, char** argv) {
 		if( keys[SDLK_ESCAPE] ) {
 			done = 1;
 		} else if( keys[SDLK_w] ) {
-			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getDirection() * 1.0f));
+			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getDirection() * movementSpeed));
 		} else if ( keys[SDLK_s] ) {
-			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getDirection() * 1.0f));
+			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getDirection() * movementSpeed));
 		} else if ( keys[SDLK_a] ) {
-			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getRight() * 1.0f));
+			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getRight() * movementSpeed));
 		} else if ( keys[SDLK_d] ) {
-			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getRight() * 1.0f));
+			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getRight() * movementSpeed));
 		} else if ( keys[SDLK_LEFT] ) {
 			controlCamera->setHorizontalAngle(controlCamera->getHorizontalAngle() + 0.01);
 		} else if ( keys[SDLK_RIGHT] ) {

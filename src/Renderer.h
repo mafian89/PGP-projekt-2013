@@ -30,16 +30,21 @@ extern void onWindowResized(unsigned, unsigned);
 ///////////////////////////////////////////
 // VARIABLES
 ///////////////////////////////////////////
+//renderer variables
 unsigned width = 800;
 unsigned height = 600;
 bool useFrameRateCap = true;
 int FPS = 0;
+glm::vec3 lightPosition(.0,10.0,.0);
+//shader variables
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
+//Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;
 int _x,_y;
 bool moved = true;
+float movementSpeed = 0.75f;
 
 ///////////////////////////////////////////
 // TMP MODEL VARIABLES
