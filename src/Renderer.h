@@ -74,5 +74,6 @@ SDL_Surface * init(unsigned width, unsigned height, unsigned color, unsigned dep
 }
 //error LNK2019: unresolved external symbol _main referenced in function ___tmainCRTStartup
 #undef main
+//or use sdlmain.lib
 
 #endif
