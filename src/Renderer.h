@@ -1,5 +1,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
+///////////////////////////////////////////
+// INCLUDES
+///////////////////////////////////////////
 #include <string>
 #include <exception>
 #include <stdexcept>
@@ -10,18 +13,31 @@
 
 #include <SDL/SDL.h>
 #include <GL/glew.h>
+#include "GLSLshader/GLSLShader.h"
 
+///////////////////////////////////////////
+// DEFINES
+///////////////////////////////////////////
 #define MIN_FRAMETIME_MSECS 15
 #define WINDOW_TITLE "PGP - Projekt 2013 FPS: "
 
+///////////////////////////////////////////
+// FUNCTION PROTOTYPES
+///////////////////////////////////////////
+extern void onInit();
+extern void onWindowResized(unsigned, unsigned);
+
+///////////////////////////////////////////
+// VARIABLES
+///////////////////////////////////////////
 unsigned width = 800;
 unsigned height = 600;
 bool useFrameRateCap = true;
 int FPS = 0;
 
-extern void onInit();
-extern void onWindowResized(unsigned, unsigned);
-
+///////////////////////////////////////////
+// FUNCTIONS
+///////////////////////////////////////////
 struct SDL_Exception : public std::runtime_error
 {
     SDL_Exception() throw()

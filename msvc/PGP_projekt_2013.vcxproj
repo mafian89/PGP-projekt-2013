@@ -79,9 +79,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\GLSLshader\GLSLShader.cpp" />
     <ClCompile Include="..\src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\GLSLshader\GLSLShader.h" />
     <ClInclude Include="..\src\Renderer.h" />
     <ClInclude Include="..\src\Timer.h" />
   </ItemGroup>
