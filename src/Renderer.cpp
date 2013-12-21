@@ -77,53 +77,6 @@ void Render(){
 	SDL_GL_SwapBuffers();
 }
 
-void onMouseMove(unsigned x, unsigned y, int xrel, int yrel, Uint8 buttons)
-{
-	if(buttons & SDL_BUTTON_LMASK)
-	{
-		SDL_WarpMouse((Uint16)(width/2),(Uint16)(height/2));
-		SDL_GetMouseState(&_x,&_y); 
-		
-		#ifndef DEBUG
-			//std::cout<<_x<<" "<<_y<<std::endl;
-			//std::cout<<"width/2: "<<width/2<<"\n"<<"+: "<<mouseSpeed * float(width/2 - _x)<<std::endl;
-			//std::cout<<"rel: "<<xrel<<" "<<yrel<<std::endl;
-			//std::cout<<"normal: "<<x<<" "<<y<<std::endl;
-			//std::cout<<"float(width/2 - _x): "<<float(400 - _x)<<std::endl;
-			//std::cout<<"float(width/2 - x): "<<float(300 - x)<<std::endl;
-			//std::cout<<"mouseSpeed *float(width/2 - _x): "<<mouseSpeed *float(400 - _x)<<std::endl;
-			//std::cout<<"mouseSpeed *float(width/2 - x): "<<mouseSpeed *float(300 - x)<<std::endl;
-			//std::cout<<controlCamera->getHorizontalAngle() + mouseSpeed * float(width/2 - _x)<<std::endl;
-		std::cout<<"+---"<<std::endl;
-		std::cout<<"[DEFAULT] horizontal angle: "<<controlCamera->getHorizontalAngle()<<std::endl;
-		std::cout<<"[DEFAULT] vertical angle: "<<controlCamera->getVerticalAngle()<<std::endl;
-		//std::cout<<"[VALUE] (float(width/2) - float(_x)): "<<(float(width/2) - float(_x))<<std::endl;
-		//std::cout<<"[VALUE] (float(width/2) - float(_x)): "<<(float(width/2) - float(_x))<<std::endl;
-		//std::cout<<"[VALUE] mouseSpeed * float(width/2 - _x): "<<mouseSpeed * (float(width/2) - float(_x))<<std::endl;
-		//std::cout<<"[VALUE] mouseSpeed * float(height/2 - _y): "<<mouseSpeed * (float(height/2) - float(_y))<<std::endl;
-		std::cout<<"[NEW] horizontal angle: "<<controlCamera->getHorizontalAngle() + mouseSpeed * (float(width/2) - float(_x))<<std::endl;
-		std::cout<<"[NEW] vertical angle: "<<controlCamera->getVerticalAngle() + mouseSpeed * (float(height/2) - float(_y))<<std::endl;
-		//std::cout<<"[WIDTH/2]: "<<width/2<<std::endl;
-		//std::cout<<"[HEIGHT/2]: "<<height/2<<std::endl;
-		//std::cout<<"[_x]: "<<_x<<std::endl;
-		//std::cout<<"[_Y]: "<<_y<<std::endl;
-		std::cout<<"+---"<<std::endl;
-		#endif
-		
-		//controlCam->horizontalAngle += mouseSpeed * float(width/2 - _x);
-		//controlCam->verticalAngle   += mouseSpeed * float(height/2 - _y);
-		controlCamera->setHorizontalAngle(controlCamera->getHorizontalAngle() + mouseSpeed * (float(width/2) - float(_x)));
-		controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() + mouseSpeed * (float(height/2) - float(_y)));
-		if(controlCamera->getVerticalAngle() >= 3.14f/2.0f){
-			controlCamera->setVerticalAngle(3.14f/2.0f);
-		} else if(controlCamera->getVerticalAngle() <= (-3.14f/2.0f)){
-			controlCamera->setVerticalAngle(-3.14f/2.0f);
-		}
-		Render();
-		//std::cout<<controlCamera->getHorizontalAngle()<<std::endl;
-	}
-}
-
 ////////////////////////////////////////////////////
 // APPLICATION MAIN LOOP
 ////////////////////////////////////////////////////
@@ -173,7 +126,6 @@ int main(int argc, char** argv) {
 					controlCamera->computeMatricesFromInputs();
 					controlCamera->moved = false;
 				}
-				//onMouseMove(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel, event.motion.state);
 				break;
 			// ##### INSERT CODE TO HANDLE ANY OTHER EVENTS HERE #####
 			}
