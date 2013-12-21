@@ -14,6 +14,12 @@
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 #include "GLSLshader/GLSLShader.h"
+#ifdef _MSC_VER
+#pragma comment(lib, "SDL.lib")
+#pragma comment(lib, "OpenGL32.lib")
+#pragma comment(lib, "glew32.lib")
+#pragma comment(lib, "assimp.lib")
+#endif//_MSC_VER
 
 ///////////////////////////////////////////
 // DEFINES
