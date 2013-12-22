@@ -41,6 +41,8 @@ void onInit() {
 	blurShader.Use();
 		blurShader.AddAttribute("vPosition");
 		blurShader.AddUniform("render_tex");
+		blurShader.AddUniform("x");
+		blurShader.AddUniform("y");
 	blurShader.UnUse();
 
 	////////////////////////////////////////////////////
@@ -149,8 +151,11 @@ void Render(){
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
 	blurShader.Use();
-		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glUniform1i(blurShader["render_tex"],1);
+		//glUniform1f(blurShader["x"],800.0);
+		//glUniform1f(blurShader["y"],600.0);
+		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glEnableVertexAttribArray(blurShader["vPosition"]);
 		glVertexAttribPointer(blurShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
