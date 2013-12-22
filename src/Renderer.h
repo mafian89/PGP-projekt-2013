@@ -40,9 +40,10 @@ int FPS = 0;
 glm::vec3 lightPosition(.0,10.0,.0);
 //shader variables
 string shaderDir = "../src/shaders/";
-string textureDir = "../textures/";
 GLSLShader simpleShader;
+GLSLShader quadShader;
 //Texture manager variables
+string textureDir = "../textures/";
 CTextureManager texManager;
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();

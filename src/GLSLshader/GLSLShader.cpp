@@ -113,6 +113,7 @@ void GLSLShader::LoadFromFile(GLenum whichShader, const string& filename){
 			buffer.append("\r\n");
 		}		*/
 		string buffer(std::istreambuf_iterator<char>(fp), (std::istreambuf_iterator<char>()));
+		std::cout<<"Loading ["<<filename<<"] "<<std::endl;
 		//copy to source
 		LoadFromString(whichShader, buffer);		
 	} else {

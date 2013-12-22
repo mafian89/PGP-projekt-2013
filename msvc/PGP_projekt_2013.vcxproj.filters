@@ -67,5 +67,8 @@
     <None Include="..\src\shaders\screenQuad.vp">
       <Filter>Source Files\shaders</Filter>
     </None>
+    <None Include="..\src\shaders\textureRenderShader.fp">
+      <Filter>Source Files\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

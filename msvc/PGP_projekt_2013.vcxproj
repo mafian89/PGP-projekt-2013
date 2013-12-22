@@ -97,6 +97,7 @@
     <None Include="..\src\shaders\screenQuad.vp" />
     <None Include="..\src\shaders\simpleShader.fp" />
     <None Include="..\src\shaders\simpleShader.vp" />
+    <None Include="..\src\shaders\textureRenderShader.fp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

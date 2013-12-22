@@ -12,6 +12,10 @@ void onInit() {
 	simpleShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"simpleShader.fp").c_str());
 	simpleShader.CreateAndLinkProgram();
 
+	quadShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
+	quadShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"textureRenderShader.fp").c_str());
+	quadShader.CreateAndLinkProgram();
+
 	////////////////////////////////////////////////////
 	// LOCATION OF ATRIBUTES AND UNIFORMS
 	////////////////////////////////////////////////////
@@ -23,6 +27,11 @@ void onInit() {
 		simpleShader.AddUniform("mn");
 		simpleShader.AddUniform("vLightPos");
 	simpleShader.UnUse();
+
+	quadShader.Use();
+		simpleShader.AddAttribute("vPosition");
+		simpleShader.AddUniform("fTexture");
+	quadShader.UnUse();
 
 	////////////////////////////////////////////////////
 	// CAMERA INIT
@@ -138,13 +147,18 @@ void Render(){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
 	simpleShader.UnUse();
+
 	//Draw screen quad
-	//quadShader.Use();
-	//	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
-	//	glEnableVertexAttribArray(simpleShader["vPosition"]);
-	//	glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
-	//	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
-	//quadShader.UnUse();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texManager["tex"]); 
+	quadShader.Use();
+		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+		glUniform1i(quadShader["fTexture"],0);
+		glEnableVertexAttribArray(quadShader["vPosition"]);
+		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
+		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+	quadShader.UnUse();
+	glBindTexture(GL_TEXTURE_2D, NULL); 
 
 
 	//Swap buffers
