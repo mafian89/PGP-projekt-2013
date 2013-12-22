@@ -63,53 +63,6 @@ void onInit() {
 }
 
 ////////////////////////////////////////////////////
-// FBO STATUS CHECK
-////////////////////////////////////////////////////
-bool checkFramebufferStatus()
-{
-	// check FBO status
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	switch(status)
-	{
-	case GL_FRAMEBUFFER_COMPLETE_EXT:
-		std::cout << "Framebuffer complete." << std::endl;
-		return true;
-
-	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-		std::cout << "[ERROR] Framebuffer incomplete: Attachment is NOT complete." << std::endl;
-		return false;
-
-	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-		std::cout << "[ERROR] Framebuffer incomplete: No image is attached to FBO." << std::endl;
-		return false;
-
-	case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-		std::cout << "[ERROR] Framebuffer incomplete: Attached images have different dimensions." << std::endl;
-		return false;
-
-	case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-		std::cout << "[ERROR] Framebuffer incomplete: Color attached images have different internal formats." << std::endl;
-		return false;
-
-	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-		std::cout << "[ERROR] Framebuffer incomplete: Draw buffer." << std::endl;
-		return false;
-
-	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-		std::cout << "[ERROR] Framebuffer incomplete: Read buffer." << std::endl;
-		return false;
-
-	case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-		std::cout << "[ERROR] Unsupported by FBO implementation." << std::endl;
-		return false;
-
-	default:
-		std::cout << "[ERROR] Unknow error." << std::endl;
-		return false;
-	}
-}
-
-////////////////////////////////////////////////////
 // FUNCTION FOR WINDOW RESIZE EVENT
 ////////////////////////////////////////////////////
 void onWindowResized(unsigned w, unsigned h){
