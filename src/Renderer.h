@@ -48,6 +48,7 @@ GLSLShader quadShader;
 //Texture manager variables
 string textureDir = "../textures/";
 CTextureManager texManager;
+GLuint currentTexture;
 //FBO manager variables
 CFboManager * fboManager = new CFboManager();
 //Camera variables

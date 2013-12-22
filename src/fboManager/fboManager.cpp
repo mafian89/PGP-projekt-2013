@@ -34,13 +34,11 @@ void CFboManager::bindRenderBuffer() {
 
 void CFboManager::setDrawBuffers() {
 	glDrawBuffers(attachmentCount, mrt);
-	std::cout<<attachmentCount<<std::endl;
 }
 
 void CFboManager::bindToFbo(GLenum type, GLenum texture, GLuint textureId) {
 	glBindFramebuffer(GL_FRAMEBUFFER,_fboId);
 	glFramebufferTexture2D(GL_FRAMEBUFFER,type,texture,textureId,0);
-	//glDrawBuffers(1, mrt);
 	attachmentCount += 1;
 	//glBindFramebuffer(GL_FRAMEBUFFER,0);
 }

@@ -44,6 +44,7 @@ void onInit() {
 	//texManager.createTexture("tex",(textureDir + "textura.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("tex1","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("tex2","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	currentTexture = texManager["tex1"];
 
 	////////////////////////////////////////////////////
 	// FBO INIT
@@ -120,7 +121,7 @@ void Render(){
 
 	//Draw screen quad
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texManager["tex1"]); 
+	glBindTexture(GL_TEXTURE_2D, currentTexture); 
 	quadShader.Use();
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glUniform1i(quadShader["fTexture"],0);
@@ -209,6 +210,10 @@ int main(int argc, char** argv) {
 			controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() + 0.01);
 		} else if ( keys[SDLK_DOWN] ) {
 			controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() - 0.01);
+		} else if ( keys[SDLK_c] ) {
+			currentTexture = texManager["tex1"];
+		} else if ( keys[SDLK_x] ) {
+			currentTexture = texManager["tex2"];
 		}
 		
 
