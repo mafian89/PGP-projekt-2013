@@ -1,8 +1,11 @@
 #include "fboManager.h"
 
+//GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+//glDrawBuffers(2, mrt);
+
 CFboManager::CFboManager() {
-	glGenFramebuffers(1, &_fboId);
 	useRenderBuffer = false;
+	attachmentCount = 0;
 }
 
 CFboManager::~CFboManager() {
@@ -12,11 +15,31 @@ CFboManager::~CFboManager() {
 	}
 }
 
+void CFboManager::initFbo() {
+	glGenFramebuffers(1, &_fboId);
+}
+
 void CFboManager::genRenderBuffer(unsigned w, unsigned h) {
 	glGenRenderbuffers(1,&_renderBufferId);
 	glBindRenderbuffer(GL_RENDERBUFFER, _renderBufferId);
 	glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH_COMPONENT,w,h);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+void CFboManager::bindRenderBuffer() {
+	glBindFramebuffer(GL_FRAMEBUFFER,_fboId);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_RENDERBUFFER,_renderBufferId);
+	//glBindFramebuffer(GL_FRAMEBUFFER,0);
+}
+
+void CFboManager::bindToFbo(GLenum type, GLenum texture, GLuint textureId) {
+	glBindFramebuffer(GL_FRAMEBUFFER,_fboId);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,type,texture,textureId,0);
+	//GLenum mrt[] = { GL_COLOR_ATTACHMENT0};
+	//glDrawBuffers(1, mrt);
+	attachmentCount += 1;
+
+	//glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
 GLuint CFboManager::getFboId() {

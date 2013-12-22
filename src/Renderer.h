@@ -9,6 +9,7 @@
 #include "camera/controlCamera.h"
 #include "commonIncludes.h"
 #include "textureManager/textureManager.h"
+#include "fboManager/fboManager.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
@@ -47,6 +48,8 @@ GLSLShader quadShader;
 //Texture manager variables
 string textureDir = "../textures/";
 CTextureManager texManager;
+//FBO manager variables
+CFboManager * fboManager = new CFboManager();
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;

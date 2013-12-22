@@ -45,6 +45,17 @@ void onInit() {
 	texManager.createTexture("tex1","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 
 	////////////////////////////////////////////////////
+	// FBO INIT
+	////////////////////////////////////////////////////
+	fboManager->initFbo();
+	fboManager->genRenderBuffer(width,height);
+	fboManager->bindRenderBuffer();
+	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["tex1"]);
+	if(!fboManager->checkFboStatus()){
+		return;
+	}
+
+	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
 	////////////////////////////////////////////////////
 	//Sphere
@@ -86,7 +97,9 @@ void Render(){
 	controlCamera->computeMatricesFromInputs();
 
 	//Draw sphere
+	glBindFramebuffer(GL_FRAMEBUFFER, fboManager->getFboId());
 	simpleShader.Use();
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix())));
 		glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix())); 
 		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix())); 
@@ -100,10 +113,11 @@ void Render(){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
 	simpleShader.UnUse();
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
 	//Draw screen quad
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texManager["tex"]); 
+	glBindTexture(GL_TEXTURE_2D, texManager["tex1"]); 
 	quadShader.Use();
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glUniform1i(quadShader["fTexture"],0);
@@ -214,6 +228,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	delete controlCamera;
+	delete fboManager;
 	// Clean up and quit
 	SDL_Quit();
 	return 0;

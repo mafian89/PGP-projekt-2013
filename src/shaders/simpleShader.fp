@@ -1,7 +1,7 @@
 #version 150
 in vec3 eyePosition,eyeNormal,eyeLightPos;
 
-out vec4 fragColor;
+layout(location=0) out vec4 fragColor;
 
 void main() {
 	float distance = length(eyeLightPos.xyz-eyePosition.xyz);
