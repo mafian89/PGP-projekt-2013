@@ -16,6 +16,11 @@ void onInit() {
 	quadShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"textureRenderShader.fp").c_str());
 	quadShader.CreateAndLinkProgram();
 
+	blurShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
+	blurShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"blurShader.fp").c_str());
+	blurShader.CreateAndLinkProgram();
+
+
 	////////////////////////////////////////////////////
 	// LOCATION OF ATRIBUTES AND UNIFORMS
 	////////////////////////////////////////////////////
@@ -33,6 +38,11 @@ void onInit() {
 		simpleShader.AddUniform("fTexture");
 	quadShader.UnUse();
 
+	blurShader.Use();
+		blurShader.AddAttribute("vPosition");
+		blurShader.AddUniform("render_tex");
+	blurShader.UnUse();
+
 	////////////////////////////////////////////////////
 	// CAMERA INIT
 	////////////////////////////////////////////////////
@@ -44,6 +54,7 @@ void onInit() {
 	//texManager.createTexture("tex",(textureDir + "textura.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	currentTexture = texManager["render_tex"];
 
 	////////////////////////////////////////////////////
@@ -58,6 +69,16 @@ void onInit() {
 	if(!fboManager->checkFboStatus()){
 		return;
 	}
+
+	fboManagerBlur->initFbo();
+	fboManagerBlur->genRenderBuffer(width,height);
+	fboManagerBlur->bindRenderBuffer();
+	fboManagerBlur->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["blur_tex"]);
+	fboManagerBlur->setDrawBuffers();
+	if(!fboManagerBlur->checkFboStatus()){
+		return;
+	}
+	
 
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
@@ -121,6 +142,20 @@ void Render(){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
 	simpleShader.UnUse();
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+	//Blur
+	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
+	blurShader.Use();
+		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+		glUniform1i(blurShader["render_tex"],1);
+		glEnableVertexAttribArray(blurShader["vPosition"]);
+		glVertexAttribPointer(blurShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
+		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+	blurShader.UnUse();
+	glBindTexture(GL_TEXTURE_2D, NULL); 
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
 	//Draw screen quad
@@ -218,6 +253,8 @@ int main(int argc, char** argv) {
 			currentTexture = texManager["render_tex"];
 		} else if ( keys[SDLK_x] ) {
 			currentTexture = texManager["normal_tex"];
+		} else if ( keys[SDLK_v] ) {
+			currentTexture = texManager["blur_tex"];
 		}
 		
 
@@ -241,6 +278,7 @@ int main(int argc, char** argv) {
 	}
 	delete controlCamera;
 	delete fboManager;
+	delete fboManagerBlur;
 	// Clean up and quit
 	SDL_Quit();
 	return 0;

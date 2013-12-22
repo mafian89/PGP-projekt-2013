@@ -52,6 +52,7 @@ CTextureManager texManager;
 GLuint currentTexture;
 //FBO manager variables
 CFboManager * fboManager = new CFboManager();
+CFboManager * fboManagerBlur = new CFboManager();
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;
