@@ -42,9 +42,9 @@ void onInit() {
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
 	//texManager.createTexture("tex",(textureDir + "textura.png"),width,height,GL_NEAREST,0,0);
-	texManager.createTexture("tex1","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
-	texManager.createTexture("tex2","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
-	currentTexture = texManager["tex1"];
+	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	currentTexture = texManager["render_tex"];
 
 	////////////////////////////////////////////////////
 	// FBO INIT
@@ -52,8 +52,8 @@ void onInit() {
 	fboManager->initFbo();
 	fboManager->genRenderBuffer(width,height);
 	fboManager->bindRenderBuffer();
-	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["tex1"]);
-	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["tex2"]);
+	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["render_tex"]);
+	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["normal_tex"]);
 	fboManager->setDrawBuffers();
 	if(!fboManager->checkFboStatus()){
 		return;
@@ -96,6 +96,10 @@ void Render(){
 	glClearColor(0.6,0.6,0.6,1.0);
 	//Enable depth testing
 	glEnable( GL_DEPTH_TEST );
+	//View port
+	glViewport(0,0,width,height);
+	//downsample
+	//glViewport(0,0,width/2,height/2);
 
 	//Camera update
 	controlCamera->computeMatricesFromInputs();
@@ -211,9 +215,9 @@ int main(int argc, char** argv) {
 		} else if ( keys[SDLK_DOWN] ) {
 			controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() - 0.01);
 		} else if ( keys[SDLK_c] ) {
-			currentTexture = texManager["tex1"];
+			currentTexture = texManager["render_tex"];
 		} else if ( keys[SDLK_x] ) {
-			currentTexture = texManager["tex2"];
+			currentTexture = texManager["normal_tex"];
 		}
 		
 

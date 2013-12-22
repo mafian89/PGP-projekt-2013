@@ -45,6 +45,7 @@ glm::vec3 lightPosition(.0,10.0,.0);
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
 GLSLShader quadShader;
+GLSLShader blurShader;
 //Texture manager variables
 string textureDir = "../textures/";
 CTextureManager texManager;
