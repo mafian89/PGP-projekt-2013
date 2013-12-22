@@ -30,6 +30,11 @@ void onInit() {
 	controlCamera->initControlCamera(glm::vec3(.0,.0,5.0),3.14,0.0,800,600,1.0,100.0);
 
 	////////////////////////////////////////////////////
+	// TEXTURE INIT
+	////////////////////////////////////////////////////
+	texManager.createTexture("tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+
+	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
 	////////////////////////////////////////////////////
 	//Sphere
@@ -40,8 +45,59 @@ void onInit() {
 	glGenBuffers(1, &sphereEBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphere), sphere, GL_STATIC_DRAW);
+
+	//Screen quad
+	glGenBuffers(1,&screenQuadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tSceenQuad), tSceenQuad, GL_STATIC_DRAW);
 }
 
+////////////////////////////////////////////////////
+// FBO STATUS CHECK
+////////////////////////////////////////////////////
+bool checkFramebufferStatus()
+{
+	// check FBO status
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	switch(status)
+	{
+	case GL_FRAMEBUFFER_COMPLETE_EXT:
+		std::cout << "Framebuffer complete." << std::endl;
+		return true;
+
+	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+		std::cout << "[ERROR] Framebuffer incomplete: Attachment is NOT complete." << std::endl;
+		return false;
+
+	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+		std::cout << "[ERROR] Framebuffer incomplete: No image is attached to FBO." << std::endl;
+		return false;
+
+	case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+		std::cout << "[ERROR] Framebuffer incomplete: Attached images have different dimensions." << std::endl;
+		return false;
+
+	case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+		std::cout << "[ERROR] Framebuffer incomplete: Color attached images have different internal formats." << std::endl;
+		return false;
+
+	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+		std::cout << "[ERROR] Framebuffer incomplete: Draw buffer." << std::endl;
+		return false;
+
+	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+		std::cout << "[ERROR] Framebuffer incomplete: Read buffer." << std::endl;
+		return false;
+
+	case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+		std::cout << "[ERROR] Unsupported by FBO implementation." << std::endl;
+		return false;
+
+	default:
+		std::cout << "[ERROR] Unknow error." << std::endl;
+		return false;
+	}
+}
 
 ////////////////////////////////////////////////////
 // FUNCTION FOR WINDOW RESIZE EVENT
@@ -81,6 +137,13 @@ void Render(){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
 	simpleShader.UnUse();
+	//Draw screen quad
+	//quadShader.Use();
+	//	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+	//	glEnableVertexAttribArray(simpleShader["vPosition"]);
+	//	glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
+	//	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+	//quadShader.UnUse();
 
 
 	//Swap buffers

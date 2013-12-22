@@ -5,8 +5,10 @@
 ///////////////////////////////////////////
 #include "GLSLshader/GLSLShader.h"
 #include "tmp_model/sphere.h"
+#include "screenQuad.h"
 #include "camera/controlCamera.h"
 #include "commonIncludes.h"
+#include "textureManager/textureManager.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
@@ -39,6 +41,8 @@ glm::vec3 lightPosition(.0,10.0,.0);
 //shader variables
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
+//Texture manager variables
+CTextureManager texManager;
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;
@@ -51,6 +55,7 @@ float movementSpeed = 0.75f;
 ///////////////////////////////////////////
 GLuint sphereVBO;
 GLuint sphereEBO;
+GLuint screenQuadVBO;
 
 ///////////////////////////////////////////
 // FUNCTIONS

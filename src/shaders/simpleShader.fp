@@ -5,7 +5,7 @@ out vec4 fragColor;
 
 void main() {
 	float distance = length(eyeLightPos.xyz-eyePosition.xyz);
-    float att=1.0/(0.005+0.09*distance+0.01*distance*distance);
+	float att=1.0/(0.005+0.09*distance+0.0075*distance*distance);
 
 	vec3 ld = vec3(1.0,1.0,1.0);
 	vec3 ls = vec3(1.0,1.0,1.0);
