@@ -32,7 +32,8 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
-	texManager.createTexture("tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("tex",(textureDir + "textura.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("tex1","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE

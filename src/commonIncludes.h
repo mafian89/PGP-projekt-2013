@@ -2,6 +2,7 @@
 #define COMMONINCLUDES_H
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
