@@ -41,8 +41,9 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
-	texManager.createTexture("tex",(textureDir + "textura.png"),width,height,GL_NEAREST,0,0);
+	//texManager.createTexture("tex",(textureDir + "textura.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("tex1","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("tex2","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 
 	////////////////////////////////////////////////////
 	// FBO INIT
@@ -51,6 +52,8 @@ void onInit() {
 	fboManager->genRenderBuffer(width,height);
 	fboManager->bindRenderBuffer();
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["tex1"]);
+	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["tex2"]);
+	fboManager->setDrawBuffers();
 	if(!fboManager->checkFboStatus()){
 		return;
 	}

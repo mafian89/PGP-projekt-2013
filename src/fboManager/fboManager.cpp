@@ -1,11 +1,11 @@
 #include "fboManager.h"
 
-//GLenum mrt[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-//glDrawBuffers(2, mrt);
-
 CFboManager::CFboManager() {
 	useRenderBuffer = false;
 	attachmentCount = 0;
+	for(int i=0;i<5;i++) {
+		mrt[i] = GL_COLOR_ATTACHMENT0+i;
+	}
 }
 
 CFboManager::~CFboManager() {
@@ -32,13 +32,16 @@ void CFboManager::bindRenderBuffer() {
 	//glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
+void CFboManager::setDrawBuffers() {
+	glDrawBuffers(attachmentCount, mrt);
+	std::cout<<attachmentCount<<std::endl;
+}
+
 void CFboManager::bindToFbo(GLenum type, GLenum texture, GLuint textureId) {
 	glBindFramebuffer(GL_FRAMEBUFFER,_fboId);
 	glFramebufferTexture2D(GL_FRAMEBUFFER,type,texture,textureId,0);
-	//GLenum mrt[] = { GL_COLOR_ATTACHMENT0};
 	//glDrawBuffers(1, mrt);
 	attachmentCount += 1;
-
 	//glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 

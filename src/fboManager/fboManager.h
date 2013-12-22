@@ -12,12 +12,14 @@ public:
 	void bindRenderBuffer();
 	void bindToFbo(GLenum type, GLenum texture, GLuint textureId);
 	void initFbo();
+	void setDrawBuffers();
 	GLuint getFboId();
 private:
 	GLuint _fboId;
 	GLuint _renderBufferId;
 	bool useRenderBuffer;
 	unsigned attachmentCount;
+	GLenum mrt[6];
 };
 
 #endif

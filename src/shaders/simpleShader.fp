@@ -2,6 +2,7 @@
 in vec3 eyePosition,eyeNormal,eyeLightPos;
 
 layout(location=0) out vec4 fragColor;
+layout(location=1) out vec4 normal;
 
 void main() {
 	float distance = length(eyeLightPos.xyz-eyePosition.xyz);
@@ -30,7 +31,7 @@ void main() {
 	vec3 lightIntesity = (ambient + diffuse + spec)*att;
 	fragColor = vec4(lightIntesity,1.0);
 	//NORMALY
-	//fragColor = vec4(eyeNormal,1.0);
+	normal = vec4(eyeNormal,1.0);
 	//SPEC SLOZKA
 	//fragColor = vec4(spec, 1.0);
 }
