@@ -44,7 +44,7 @@ void onInit() {
 		quadShader.AddUniform("bloom");
 		quadShader.AddUniform("useHDR");
 	quadShader.UnUse();
-	//std::cout<<texManager["render_tex"]<<" "<<texManager["normal_tex"]<<" "<<texManager["blur_tex"]<<" "<<texManager["bloom_tex"]<<std::endl;
+
 	blurShader.Use();
 		blurShader.AddAttribute("vPosition");
 		blurShader.AddUniform("render_tex");
@@ -73,7 +73,6 @@ void onInit() {
 	texManager.createTexture("bloom_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	currentTexture = texManager["render_tex"];
 
-	//std::cout<<texManager["render_tex"]<<" "<<texManager["normal_tex"]<<" "<<texManager["blur_tex"]<<" "<<texManager["bloom_tex"]<<std::endl;
 	////////////////////////////////////////////////////
 	// FBO INIT
 	////////////////////////////////////////////////////
