@@ -5,15 +5,20 @@
 ///////////////////////////////////////////
 #include "GLSLshader/GLSLShader.h"
 #include "tmp_model/sphere.h"
+#include "screenQuad.h"
 #include "camera/controlCamera.h"
 #include "commonIncludes.h"
+#include "textureManager/textureManager.h"
+#include "fboManager/fboManager.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
 #pragma comment(lib, "OpenGL32.lib")
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "assimp.lib")
+#pragma comment(lib, "SDL_image.lib")
 #endif//_MSC_VER
+
 
 ///////////////////////////////////////////
 // DEFINES
@@ -39,6 +44,20 @@ glm::vec3 lightPosition(.0,10.0,.0);
 //shader variables
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
+GLSLShader quadShader;
+GLSLShader blurShader;
+GLSLShader bloomSsaoShader;
+unsigned int kernelSize = 32;
+float treshold = 0.1;
+bool useHdr = true;
+//Texture manager variables
+string textureDir = "../textures/";
+CTextureManager texManager;
+GLuint currentTexture;
+//FBO manager variables
+CFboManager * fboManager = new CFboManager();
+CFboManager * fboManagerBlur = new CFboManager();
+CFboManager * fboManagerBloomSsao = new CFboManager();
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;
@@ -51,6 +70,7 @@ float movementSpeed = 0.75f;
 ///////////////////////////////////////////
 GLuint sphereVBO;
 GLuint sphereEBO;
+GLuint screenQuadVBO;
 
 ///////////////////////////////////////////
 // FUNCTIONS

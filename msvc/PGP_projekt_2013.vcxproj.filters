@@ -30,6 +30,12 @@
     <ClCompile Include="..\src\camera\controlCamera.cpp">
       <Filter>Source Files\code</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\textureManager\textureManager.cpp">
+      <Filter>Source Files\code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\fboManager\fboManager.cpp">
+      <Filter>Source Files\code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\GLSLshader\GLSLShader.h">
@@ -47,12 +53,36 @@
     <ClInclude Include="..\src\commonIncludes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\screenQuad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\textureManager\textureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\fboManager\fboManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\simpleShader.vp">
       <Filter>Source Files\shaders</Filter>
     </None>
     <None Include="..\src\shaders\simpleShader.fp">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\screenQuad.vp">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\blurShader.fp">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\textureRenderShader.fp">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\extractAndSsaoShader.fp">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\multiTexShader.fp">
       <Filter>Source Files\shaders</Filter>
     </None>
   </ItemGroup>

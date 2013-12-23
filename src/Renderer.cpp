@@ -12,6 +12,20 @@ void onInit() {
 	simpleShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"simpleShader.fp").c_str());
 	simpleShader.CreateAndLinkProgram();
 
+	quadShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
+	//quadShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"textureRenderShader.fp").c_str());
+	quadShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"multiTexShader.fp").c_str());
+	quadShader.CreateAndLinkProgram();
+
+	blurShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
+	blurShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"blurShader.fp").c_str());
+	blurShader.CreateAndLinkProgram();
+
+	bloomSsaoShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
+	bloomSsaoShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"extractAndSsaoShader.fp").c_str());
+	bloomSsaoShader.CreateAndLinkProgram();
+
+
 	////////////////////////////////////////////////////
 	// LOCATION OF ATRIBUTES AND UNIFORMS
 	////////////////////////////////////////////////////
@@ -24,10 +38,72 @@ void onInit() {
 		simpleShader.AddUniform("vLightPos");
 	simpleShader.UnUse();
 
+	quadShader.Use();
+		simpleShader.AddAttribute("vPosition");
+		simpleShader.AddUniform("color");
+		simpleShader.AddUniform("bloom");
+		//simpleShader.AddUniform("useHDR");
+	quadShader.UnUse();
+
+	blurShader.Use();
+		blurShader.AddAttribute("vPosition");
+		blurShader.AddUniform("render_tex");
+		blurShader.AddUniform("res");
+		blurShader.AddUniform("kernelSize");
+	blurShader.UnUse();
+
+	bloomSsaoShader.Use();
+		bloomSsaoShader.AddUniform("vPosition");
+		bloomSsaoShader.AddUniform("render_tex");
+		bloomSsaoShader.AddUniform("treshold");
+	bloomSsaoShader.UnUse();
+
 	////////////////////////////////////////////////////
 	// CAMERA INIT
 	////////////////////////////////////////////////////
 	controlCamera->initControlCamera(glm::vec3(.0,.0,5.0),3.14,0.0,800,600,1.0,100.0);
+
+	////////////////////////////////////////////////////
+	// TEXTURE INIT
+	////////////////////////////////////////////////////
+	//texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("bloom_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	currentTexture = texManager["render_tex"];
+
+	////////////////////////////////////////////////////
+	// FBO INIT
+	////////////////////////////////////////////////////
+	fboManager->initFbo();
+	fboManager->genRenderBuffer(width,height);
+	fboManager->bindRenderBuffer();
+	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["render_tex"]);
+	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["normal_tex"]);
+	fboManager->setDrawBuffers();
+	if(!fboManager->checkFboStatus()){
+		return;
+	}
+
+	fboManagerBlur->initFbo();
+	fboManagerBlur->genRenderBuffer(width,height);
+	fboManagerBlur->bindRenderBuffer();
+	fboManagerBlur->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["blur_tex"]);
+	fboManagerBlur->setDrawBuffers();
+	if(!fboManagerBlur->checkFboStatus()){
+		return;
+	}
+
+	fboManagerBloomSsao->initFbo();
+	fboManagerBloomSsao->genRenderBuffer(width,height);
+	fboManagerBloomSsao->bindRenderBuffer();
+	fboManagerBloomSsao->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["bloom_tex"]);
+	fboManagerBloomSsao->setDrawBuffers();
+	if(!fboManagerBloomSsao->checkFboStatus()){
+		return;
+	}
+	
 
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
@@ -40,8 +116,12 @@ void onInit() {
 	glGenBuffers(1, &sphereEBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphere), sphere, GL_STATIC_DRAW);
-}
 
+	//Screen quad
+	glGenBuffers(1,&screenQuadVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tSceenQuad), tSceenQuad, GL_STATIC_DRAW);
+}
 
 ////////////////////////////////////////////////////
 // FUNCTION FOR WINDOW RESIZE EVENT
@@ -58,16 +138,23 @@ void Render(){
 	//std::cout<<"RENDER"<<std::endl;
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	//Cleat color
-	glClearColor(0.6,0.6,0.6,1.0);
+	//Clear color
+	glClearColor(0.0,0.0,0.6,1.0);
+	//glClearColor(0.0,0.0,0.0,1.0);
 	//Enable depth testing
 	glEnable( GL_DEPTH_TEST );
+	//View port
+	glViewport(0,0,width,height);
+	//downsample
+	//glViewport(0,0,width/2,height/2);
 
 	//Camera update
 	controlCamera->computeMatricesFromInputs();
 
 	//Draw sphere
+	glBindFramebuffer(GL_FRAMEBUFFER, fboManager->getFboId());
 	simpleShader.Use();
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix())));
 		glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix())); 
 		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix())); 
@@ -81,6 +168,59 @@ void Render(){
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
 		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
 	simpleShader.UnUse();
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+	//Bloom and SSAO
+	glViewport(0,0,width,height);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBloomSsao->getFboId());
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
+	bloomSsaoShader.Use();
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		glUniform1i(bloomSsaoShader("render_tex"),0);
+		glUniform1f(bloomSsaoShader("treshold"),treshold);
+		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);
+		glVertexAttribPointer(bloomSsaoShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
+		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+	bloomSsaoShader.UnUse();
+	glBindTexture(GL_TEXTURE_2D, NULL); 
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+	//Blur
+	glViewport(0,0,width/2,height/2);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, texManager["bloom_tex"]); 
+	blurShader.Use();
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		glUniform1i(blurShader("render_tex"),3);
+		glUniform2f(blurShader("res"),(float)width/2.0,(float)height/2.0);
+		glUniform1i(blurShader("kernelSize"),kernelSize);
+		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+		glEnableVertexAttribArray(blurShader["vPosition"]);
+		glVertexAttribPointer(blurShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
+		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+	blurShader.UnUse();
+	glBindTexture(GL_TEXTURE_2D, NULL); 
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+	glViewport(0,0,width,height);
+	//Draw screen quad
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texManager["blur_tex"]); 
+	quadShader.Use();
+		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+		glUniform1i(quadShader("color"),0);
+		glUniform1i(quadShader("bloom"),1);
+		//glUniform1i(quadShader("tmp"),useHdr);
+		glEnableVertexAttribArray(quadShader["vPosition"]);
+		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
+		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+	quadShader.UnUse();
+	glBindTexture(GL_TEXTURE_2D, NULL); 
 
 
 	//Swap buffers
@@ -96,6 +236,7 @@ int main(int argc, char** argv) {
 	Uint8 *keys;
 	//Initialize
 	if(SDL_Init(SDL_INIT_VIDEO)< 0) throw SDL_Exception();
+	SDL_EnableKeyRepeat(100,SDL_DEFAULT_REPEAT_INTERVAL);
 	//Create a OpenGL window
 	screen = init(width,height,24,24,8);
 	SDL_WM_SetCaption(WINDOW_TITLE, WINDOW_TITLE);
@@ -137,15 +278,27 @@ int main(int argc, char** argv) {
 					controlCamera->moved = false;
 				}
 				break;
-			// ##### INSERT CODE TO HANDLE ANY OTHER EVENTS HERE #####
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						done=1;
+						break;
+					case SDLK_KP_PLUS:
+						if(treshold <= 1.0) {treshold += 0.1;}
+						std::cout<<treshold<<std::endl;
+						break;
+					case SDLK_KP_MINUS:
+						if(treshold >= 0.2) {treshold -= 0.1;}
+						std::cout<<treshold<<std::endl;
+						break;
+				}
+				break;
 			}
 		}
-		
-		//Check for escape
+
 		keys = SDL_GetKeyState(NULL);
-		if( keys[SDLK_ESCAPE] ) {
-			done = 1;
-		} else if( keys[SDLK_w] ) {
+		if( keys[SDLK_w] ) {
 			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getDirection() * movementSpeed));
 		} else if ( keys[SDLK_s] ) {
 			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getDirection() * movementSpeed));
@@ -153,16 +306,7 @@ int main(int argc, char** argv) {
 			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getRight() * movementSpeed));
 		} else if ( keys[SDLK_d] ) {
 			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getRight() * movementSpeed));
-		} else if ( keys[SDLK_LEFT] ) {
-			controlCamera->setHorizontalAngle(controlCamera->getHorizontalAngle() + 0.01);
-		} else if ( keys[SDLK_RIGHT] ) {
-			controlCamera->setHorizontalAngle(controlCamera->getHorizontalAngle() - 0.01);
-		} else if ( keys[SDLK_UP] ) {
-			controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() + 0.01);
-		} else if ( keys[SDLK_DOWN] ) {
-			controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() - 0.01);
 		}
-		
 
 		// Draw the screen
 		Render();
@@ -183,6 +327,9 @@ int main(int argc, char** argv) {
 		}
 	}
 	delete controlCamera;
+	delete fboManager;
+	delete fboManagerBlur;
+	delete fboManagerBloomSsao;
 	// Clean up and quit
 	SDL_Quit();
 	return 0;

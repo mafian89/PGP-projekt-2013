@@ -57,7 +57,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL.lib;glew32.lib;OpenGL32.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL.lib;glew32.lib;OpenGL32.lib;assimp.lib;SDL_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
@@ -80,19 +80,29 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\camera\controlCamera.cpp" />
+    <ClCompile Include="..\src\fboManager\fboManager.cpp" />
     <ClCompile Include="..\src\GLSLshader\GLSLShader.cpp" />
     <ClCompile Include="..\src\Renderer.cpp" />
+    <ClCompile Include="..\src\textureManager\textureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera\controlCamera.h" />
     <ClInclude Include="..\src\commonIncludes.h" />
+    <ClInclude Include="..\src\fboManager\fboManager.h" />
     <ClInclude Include="..\src\GLSLshader\GLSLShader.h" />
     <ClInclude Include="..\src\Renderer.h" />
+    <ClInclude Include="..\src\screenQuad.h" />
+    <ClInclude Include="..\src\textureManager\textureManager.h" />
     <ClInclude Include="..\src\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\src\shaders\blurShader.fp" />
+    <None Include="..\src\shaders\extractAndSsaoShader.fp" />
+    <None Include="..\src\shaders\multiTexShader.fp" />
+    <None Include="..\src\shaders\screenQuad.vp" />
     <None Include="..\src\shaders\simpleShader.fp" />
     <None Include="..\src\shaders\simpleShader.vp" />
+    <None Include="..\src\shaders\textureRenderShader.fp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

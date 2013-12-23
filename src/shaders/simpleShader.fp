@@ -1,11 +1,12 @@
 #version 150
 in vec3 eyePosition,eyeNormal,eyeLightPos;
 
-out vec4 fragColor;
+layout(location=0) out vec4 fragColor;
+layout(location=1) out vec4 normal;
 
 void main() {
 	float distance = length(eyeLightPos.xyz-eyePosition.xyz);
-    float att=1.0/(0.005+0.09*distance+0.01*distance*distance);
+	float att=1.0/(0.005+0.09*distance+0.0075*distance*distance);
 
 	vec3 ld = vec3(1.0,1.0,1.0);
 	vec3 ls = vec3(1.0,1.0,1.0);
@@ -13,7 +14,7 @@ void main() {
 
 	vec3 kd; 
 	vec3 ks;
-		kd = vec3(0.8,0.8,0.8);
+		kd = vec3(1.0,0.0,0.0);
 		ks = vec3(0.8,0.8,0.8);
 	vec3 ka = vec3(0.0,0.0,0.0);
 	vec3 tmpNormal = normalize(eyeNormal);
@@ -30,7 +31,7 @@ void main() {
 	vec3 lightIntesity = (ambient + diffuse + spec)*att;
 	fragColor = vec4(lightIntesity,1.0);
 	//NORMALY
-	//fragColor = vec4(eyeNormal,1.0);
+	normal = vec4(eyeNormal,1.0);
 	//SPEC SLOZKA
 	//fragColor = vec4(spec, 1.0);
 }
