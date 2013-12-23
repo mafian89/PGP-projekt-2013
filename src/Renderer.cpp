@@ -324,9 +324,9 @@ int main(int argc, char** argv) {
 							if(treshold >= 0.2) {treshold -= 0.1;}
 							std::cout<<treshold<<std::endl;
 							break;
-						case SDLK_h:
+						/*case SDLK_h:
 							useHdr = !useHdr;
-							break;
+							break;*/
 					}
 					break;
 				}
