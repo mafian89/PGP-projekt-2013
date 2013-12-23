@@ -240,7 +240,6 @@ int main(int argc, char** argv) {
 	//Create a OpenGL window
 	screen = init(width,height,24,24,8);
 	SDL_WM_SetCaption(WINDOW_TITLE, WINDOW_TITLE);
-	//##### INSERT ANY ARGUMENT (PARAMETER) PARSING CODE HERE
 
 	const int FPS_limit = 60;
 	Uint32 start;
