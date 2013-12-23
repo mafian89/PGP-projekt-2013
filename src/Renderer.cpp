@@ -37,7 +37,7 @@ void onInit() {
 		simpleShader.AddAttribute("vPosition");
 		simpleShader.AddUniform("fTexture");
 		simpleShader.AddUniform("bloomTex");
-		//simpleShader.AddUniform("useHDR");
+		simpleShader.AddUniform("useHDR");
 	quadShader.UnUse();
 
 	blurShader.Use();
@@ -176,7 +176,7 @@ void Render(){
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glUniform1i(quadShader("fTexture"),0);
 		glUniform1i(quadShader("bloomTex"),1);
-		//glUniform1i(quadShader("useHDR"),useHdr);
+		glUniform1i(quadShader("useHDR"),useHdr);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
@@ -197,6 +197,7 @@ int main(int argc, char** argv) {
 	Uint8 *keys;
 	//Initialize
 	if(SDL_Init(SDL_INIT_VIDEO)< 0) throw SDL_Exception();
+	SDL_EnableKeyRepeat(250,SDL_DEFAULT_REPEAT_INTERVAL);
 	//Create a OpenGL window
 	screen = init(width,height,24,24,8);
 	SDL_WM_SetCaption(WINDOW_TITLE, WINDOW_TITLE);
