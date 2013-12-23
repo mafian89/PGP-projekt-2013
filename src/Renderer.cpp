@@ -74,16 +74,18 @@ void onInit() {
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("bloom_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("depth_tex","",width,height,GL_NEAREST,GL_DEPTH_COMPONENT32,GL_DEPTH_COMPONENT);
 	currentTexture = texManager["render_tex"];
 
 	////////////////////////////////////////////////////
 	// FBO INIT
 	////////////////////////////////////////////////////
 	fboManager->initFbo();
-	fboManager->genRenderBuffer(width,height);
-	fboManager->bindRenderBuffer();
+	//fboManager->genRenderBuffer(width,height);
+	//fboManager->bindRenderBuffer();
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["render_tex"]);
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["normal_tex"]);
+	fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
 	fboManager->setDrawBuffers();
 	if(!fboManager->checkFboStatus()){
 		return;
@@ -211,7 +213,7 @@ void Render(){
 	glBindTexture(GL_TEXTURE_2D, NULL); 
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-	//Blur
+	//Blur - undersample
 	glViewport(0,0,width/2,height/2);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
 	glActiveTexture(GL_TEXTURE0);
