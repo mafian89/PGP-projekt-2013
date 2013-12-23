@@ -27,16 +27,20 @@ void main() {
 	vec4 colorSample = texture(color,texCoord);
 	float toneMap = exp * (exp / bMax + 1.0) / (exp + 1.0);
 	if(useHDR) {
-		result = colorSample + vec4(bloomedSample,1.0)*toneMap;
+		FragColor = (texture(color, texCoord) + texture(bloom,texCoord*0.5) * bloomStrength) * toneMap;
 	} else {
-		result = colorSample;
+		FragColor = texture(color, texCoord);
 	}
-	if(useSSAO) {
-		result *= vec4(ssao,ssao,ssao,1.0);
+	if(useSSAO){
+		if(!useHDR) {
+			FragColor = texture(color, texCoord) * ssao;
+		} else {
+			FragColor = ((texture(color, texCoord) + texture(bloom,texCoord*0.5) * bloomStrength) * toneMap) * ssao;
+		}
+	} else {
+		FragColor = texture(color, texCoord);
 	}
 	if(onlySSAO) {
 		FragColor = vec4(ssao);
-	} else {
-		FragColor = result;
 	}
 }

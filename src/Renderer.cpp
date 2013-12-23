@@ -137,8 +137,8 @@ void onInit() {
                " label='Bloom strength' keyIncr=3 keyDecr=CTRL+3 min=0 max=3 step=0.1 ");
 	TwAddVarRW(bar, "Treshold for blurring", TW_TYPE_DOUBLE, &treshold, 
                " label='Treshold' keyIncr=4 keyDecr=CTRL+4 min=0.1 max=1 step=0.1 ");
-	TwAddVarRW(bar, "use HDR", TW_TYPE_BOOL32, &useHdr, 
-            " label='HDR' true='YES' false='NO' key='h' help='Turns on/off hdr' ");
+	/*TwAddVarRW(bar, "use HDR", TW_TYPE_BOOL32, &useHdr, 
+            " label='HDR' true='YES' false='NO' key='h' help='Turns on/off hdr' ");*/
 
 
 	TwAddVarRW(bar, "totStrength", TW_TYPE_DOUBLE, &totStrength, 
@@ -151,10 +151,10 @@ void onInit() {
                " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
 	TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
                " label='rad' min=0.0 max=5.0 step=0.005");
-	TwAddVarRW(bar, "use SSAO", TW_TYPE_BOOL32, &useSSAO, 
-            " label='SSAO' true='YES' false='NO' key='h' help='Turns on/off SSAO' ");
+	/*TwAddVarRW(bar, "use SSAO", TW_TYPE_BOOL32, &useSSAO, 
+            " label='SSAO' true='YES' false='NO' help='Turns on/off SSAO' ");
 	TwAddVarRW(bar, "only SSAO", TW_TYPE_BOOL32, &onlySSAO, 
-            " label='only SSAO' true='YES' false='NO' key='h' help='Turns on/off SSAO component' ");
+            " label='only SSAO' true='YES' false='NO' help='Turns on/off SSAO component' ");*/
 
 
 	////////////////////////////////////////////////////
@@ -366,9 +366,15 @@ int main(int argc, char** argv) {
 							if(treshold >= 0.2) {treshold -= 0.1;}
 							std::cout<<treshold<<std::endl;
 							break;
-						/*case SDLK_h:
+						case SDLK_h:
 							useHdr = !useHdr;
-							break;*/
+							break;
+						case SDLK_j:
+							onlySSAO = !onlySSAO;
+							break;
+						case SDLK_k:
+							useSSAO = !useSSAO;
+							break;
 					}
 					break;
 				}
