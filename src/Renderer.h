@@ -46,7 +46,8 @@ string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
 GLSLShader quadShader;
 GLSLShader blurShader;
-unsigned int kernelSize = 8;
+unsigned int kernelSize = 16;
+bool useHdr = true;
 //Texture manager variables
 string textureDir = "../textures/";
 CTextureManager texManager;

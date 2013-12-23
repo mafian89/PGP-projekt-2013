@@ -36,6 +36,8 @@ void onInit() {
 	quadShader.Use();
 		simpleShader.AddAttribute("vPosition");
 		simpleShader.AddUniform("fTexture");
+		simpleShader.AddUniform("bloomTex");
+		//simpleShader.AddUniform("useHDR");
 	quadShader.UnUse();
 
 	blurShader.Use();
@@ -147,13 +149,13 @@ void Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
 	//Blur
-	//glViewport(0,0,width/2,height/2);
+	glViewport(0,0,width,height);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
 	blurShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glUniform1i(blurShader("render_tex"),1);
+		glUniform1i(blurShader("render_tex"),0);
 		glUniform2f(blurShader("res"),(float)width,(float)height);
 		glUniform1i(blurShader("kernelSize"),kernelSize);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
@@ -168,9 +170,13 @@ void Render(){
 	//Draw screen quad
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, currentTexture); 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texManager["blur_tex"]); 
 	quadShader.Use();
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glUniform1i(quadShader("fTexture"),0);
+		glUniform1i(quadShader("bloomTex"),1);
+		//glUniform1i(quadShader("useHDR"),useHdr);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
@@ -270,6 +276,8 @@ int main(int argc, char** argv) {
 			if(kernelSize >= 10) {
 				kernelSize -= 2;
 			}
+		} else if ( keys[SDLK_h] ) {
+			useHdr = !useHdr;
 		}
 		
 
