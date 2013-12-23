@@ -47,7 +47,7 @@ GLSLShader simpleShader;
 GLSLShader quadShader;
 GLSLShader blurShader;
 GLSLShader bloomSsaoShader;
-unsigned int kernelSize = 16;
+unsigned int kernelSize = 32;
 float treshold = 0.1;
 bool useHdr = true;
 //Texture manager variables
