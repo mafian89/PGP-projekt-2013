@@ -41,6 +41,15 @@ unsigned height = 600;
 bool useFrameRateCap = true;
 int FPS = 0;
 glm::vec3 lightPosition(.0,10.0,.0);
+
+//AntTweak bar
+TwBar *bar;
+double exposition = 1.0;
+double bMax = 1.2;
+double bloomStrength = 0.8;
+double treshold = 0.1;
+bool useHdr = true;
+
 //shader variables
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
@@ -48,16 +57,17 @@ GLSLShader quadShader;
 GLSLShader blurShader;
 GLSLShader bloomSsaoShader;
 unsigned int kernelSize = 32;
-float treshold = 0.1;
-bool useHdr = true;
+
 //Texture manager variables
 string textureDir = "../textures/";
 CTextureManager texManager;
 GLuint currentTexture;
+
 //FBO manager variables
 CFboManager * fboManager = new CFboManager();
 CFboManager * fboManagerBlur = new CFboManager();
 CFboManager * fboManagerBloomSsao = new CFboManager();
+
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;

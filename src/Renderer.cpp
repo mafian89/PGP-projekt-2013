@@ -107,6 +107,27 @@ void onInit() {
 		return;
 	}
 	
+	////////////////////////////////////////////////////
+	// ANT TWEAK BAR
+	////////////////////////////////////////////////////
+	// Initialize AntTweakBar
+    TwInit(TW_OPENGL, NULL);
+    // Tell the window size to AntTweakBar
+    TwWindowSize(width, height);
+    // Create a tweak bar
+    bar = TwNewBar("Parametry");
+	TwDefine(" GLOBAL help='HELP!!!' "); // Message added to the help bar.
+	TwAddVarRW(bar, "Exposition for tonemapping", TW_TYPE_DOUBLE, &exposition, 
+               " label='Exposition' keyIncr=1 keyDecr=CTRL+1 min=0 max=2 step=0.1 ");
+	TwAddVarRW(bar, "Bright Max for tonemapping", TW_TYPE_DOUBLE, &bMax, 
+               " label='Bright Max' keyIncr=2 keyDecr=CTRL+2 min=0.1 max=1.50 step=0.025 ");
+	TwAddVarRW(bar, "Bloom strength for tonemapping", TW_TYPE_DOUBLE, &bloomStrength, 
+               " label='Bloom strength' keyIncr=3 keyDecr=CTRL+3 min=0 max=3 step=0.1 ");
+	TwAddVarRW(bar, "Treshold for blurring", TW_TYPE_DOUBLE, &treshold, 
+               " label='Treshold' keyIncr=4 keyDecr=CTRL+4 min=0.1 max=1 step=0.1 ");
+	TwAddVarRW(bar, "use HDR", TW_TYPE_BOOL32, &useHdr, 
+            " label='HDR' true='YES' false='NO' key='h' help='Turns on/off hdr' ");
+
 
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
@@ -193,11 +214,11 @@ void Render(){
 	//Blur
 	glViewport(0,0,width/2,height/2);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
-	glActiveTexture(GL_TEXTURE3);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["bloom_tex"]); 
 	blurShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glUniform1i(blurShader("render_tex"),3);
+		glUniform1i(blurShader("render_tex"),0);
 		glUniform2f(blurShader("res"),(float)width/2.0,(float)height/2.0);
 		glUniform1i(blurShader("kernelSize"),kernelSize);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
@@ -219,15 +240,17 @@ void Render(){
 		glUniform1i(quadShader("color"),0);
 		glUniform1i(quadShader("bloom"),1);
 		glUniform1i(quadShader("useHDR"),useHdr);
-		glUniform1f(quadShader("exp"),1.0);
-		glUniform1f(quadShader("bMax"),1.2);
-		glUniform1f(quadShader("bloomStrength"),0.8);
+		glUniform1f(quadShader("exp"),exposition);
+		glUniform1f(quadShader("bMax"),bMax);
+		glUniform1f(quadShader("bloomStrength"),bloomStrength);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
 	quadShader.UnUse();
 	glBindTexture(GL_TEXTURE_2D, NULL); 
 
+	// Draw tweak bars
+    TwDraw();
 
 	//Swap buffers
 	SDL_GL_SwapBuffers();
@@ -262,46 +285,51 @@ int main(int argc, char** argv) {
 	while(!done) 
 	{
 		SDL_Event event;
+		int handled;
 		myTimer.start();
 		//Respond to any events that occur
 		while(SDL_PollEvent(&event))
 		{
-			switch(event.type) 
-			{
-			case SDL_VIDEORESIZE:
-				onWindowResized(event.resize.w, event.resize.h);
-				break;
+			// Send event to AntTweakBar
+            handled = TwEventSDL(&event, SDL_MAJOR_VERSION, SDL_MINOR_VERSION);
+			if(!handled) {
+				switch(event.type) 
+				{
+				case SDL_VIDEORESIZE:
+					onWindowResized(event.resize.w, event.resize.h);
+					break;
 
-			case SDL_QUIT:
-				done = 1;
-				break;
-			case SDL_MOUSEMOTION :
-				if(event.motion.state & SDL_BUTTON_LMASK)
-				{
-					controlCamera->moved = true;
-					controlCamera->computeMatricesFromInputs();
-					controlCamera->moved = false;
+				case SDL_QUIT:
+					done = 1;
+					break;
+				case SDL_MOUSEMOTION :
+					if(event.motion.state & SDL_BUTTON_LMASK)
+					{
+						controlCamera->moved = true;
+						controlCamera->computeMatricesFromInputs();
+						controlCamera->moved = false;
+					}
+					break;
+				case SDL_KEYDOWN:
+					switch(event.key.keysym.sym)
+					{
+						case SDLK_ESCAPE:
+							done=1;
+							break;
+						case SDLK_KP_PLUS:
+							if(treshold <= 1.0) {treshold += 0.1;}
+							std::cout<<treshold<<std::endl;
+							break;
+						case SDLK_KP_MINUS:
+							if(treshold >= 0.2) {treshold -= 0.1;}
+							std::cout<<treshold<<std::endl;
+							break;
+						case SDLK_h:
+							useHdr = !useHdr;
+							break;
+					}
+					break;
 				}
-				break;
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-						done=1;
-						break;
-					case SDLK_KP_PLUS:
-						if(treshold <= 1.0) {treshold += 0.1;}
-						std::cout<<treshold<<std::endl;
-						break;
-					case SDLK_KP_MINUS:
-						if(treshold >= 0.2) {treshold -= 0.1;}
-						std::cout<<treshold<<std::endl;
-						break;
-					case SDLK_h:
-						useHdr = !useHdr;
-						break;
-				}
-				break;
 			}
 		}
 
@@ -338,6 +366,8 @@ int main(int argc, char** argv) {
 	delete fboManager;
 	delete fboManagerBlur;
 	delete fboManagerBloomSsao;
+	// Terminate AntTweakBar
+    TwTerminate();
 	// Clean up and quit
 	SDL_Quit();
 	return 0;
