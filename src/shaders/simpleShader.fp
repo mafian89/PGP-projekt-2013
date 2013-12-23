@@ -14,7 +14,7 @@ void main() {
 
 	vec3 kd; 
 	vec3 ks;
-		kd = vec3(1.0,0.0,0.0);
+		kd = vec3(1.0,1.0,1.0);
 		ks = vec3(0.8,0.8,0.8);
 	vec3 ka = vec3(0.0,0.0,0.0);
 	vec3 tmpNormal = normalize(eyeNormal);

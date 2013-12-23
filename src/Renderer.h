@@ -49,6 +49,11 @@ double bMax = 1.2;
 double bloomStrength = 0.8;
 double treshold = 0.1;
 bool useHdr = true;
+double totStrength = 1.38;
+double strength = 0.07;
+double offset = 9.0;
+double falloff = 0.00000001;
+double rad = 0.085;
 
 //shader variables
 string shaderDir = "../src/shaders/";
@@ -56,7 +61,7 @@ GLSLShader simpleShader;
 GLSLShader quadShader;
 GLSLShader blurShader;
 GLSLShader bloomSsaoShader;
-unsigned int kernelSize = 32;
+unsigned int kernelSize = 16;
 
 //Texture manager variables
 string textureDir = "../textures/";

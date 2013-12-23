@@ -139,6 +139,18 @@ void onInit() {
             " label='HDR' true='YES' false='NO' key='h' help='Turns on/off hdr' ");
 
 
+	TwAddVarRW(bar, "totStrength", TW_TYPE_DOUBLE, &totStrength, 
+               " label='totStrength' min=1.0 max=5.0 step=0.1 ");
+	TwAddVarRW(bar, "strength", TW_TYPE_DOUBLE, &strength, 
+               " label='strength' min=0.0 max=2.0 step=0.01 ");
+	TwAddVarRW(bar, "offset", TW_TYPE_DOUBLE, &offset, 
+               " label='offset' min=1.0 max=20.0 step=1.0 ");
+	TwAddVarRW(bar, "falloff", TW_TYPE_DOUBLE, &falloff, 
+               " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
+	TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
+               " label='rad' min=0.0 max=1.0 step=0.005");
+
+
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
 	////////////////////////////////////////////////////
@@ -219,11 +231,11 @@ void Render(){
 		glUniform1i(bloomSsaoShader("normal_tex"),1);
 		glUniform1i(bloomSsaoShader("random_tex"),2);
 		glUniform1f(bloomSsaoShader("treshold"),treshold);
-		glUniform1f(bloomSsaoShader("totStrength"),1.38);
-		glUniform1f(bloomSsaoShader("strength"),0.07);
-		glUniform1f(bloomSsaoShader("offset"),18.0);
-		glUniform1f(bloomSsaoShader("falloff"),0.000002);
-		glUniform1f(bloomSsaoShader("rad"),0.006);
+		glUniform1f(bloomSsaoShader("totStrength"),totStrength);
+		glUniform1f(bloomSsaoShader("strength"),strength);
+		glUniform1f(bloomSsaoShader("offset"),offset);
+		glUniform1f(bloomSsaoShader("falloff"),falloff);
+		glUniform1f(bloomSsaoShader("rad"),rad);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);
 		glVertexAttribPointer(bloomSsaoShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
