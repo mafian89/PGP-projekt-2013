@@ -42,7 +42,7 @@ void onInit() {
 		quadShader.AddAttribute("vPosition");
 		quadShader.AddUniform("color");
 		quadShader.AddUniform("bloom");
-		simpleShader.AddUniform("useHDR");
+		quadShader.AddUniform("useHDR");
 	quadShader.UnUse();
 	//std::cout<<texManager["render_tex"]<<" "<<texManager["normal_tex"]<<" "<<texManager["blur_tex"]<<" "<<texManager["bloom_tex"]<<std::endl;
 	blurShader.Use();
