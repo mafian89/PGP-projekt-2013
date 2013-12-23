@@ -236,7 +236,7 @@ int main(int argc, char** argv) {
 	Uint8 *keys;
 	//Initialize
 	if(SDL_Init(SDL_INIT_VIDEO)< 0) throw SDL_Exception();
-	//SDL_EnableKeyRepeat(100,SDL_DEFAULT_REPEAT_INTERVAL);
+	SDL_EnableKeyRepeat(100,SDL_DEFAULT_REPEAT_INTERVAL);
 	//Create a OpenGL window
 	screen = init(width,height,24,24,8);
 	SDL_WM_SetCaption(WINDOW_TITLE, WINDOW_TITLE);
@@ -278,55 +278,37 @@ int main(int argc, char** argv) {
 					controlCamera->moved = false;
 				}
 				break;
+			case SDL_KEYDOWN:
+				switch(event.key.keysym.sym)
+				{
+					case SDLK_ESCAPE:
+						done=1;
+						break;
+					case SDLK_w:
+						controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getDirection() * movementSpeed));
+						break;
+					case SDLK_s:
+						controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getDirection() * movementSpeed));
+						break;
+					case SDLK_a:
+						controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getRight() * movementSpeed));
+						break;
+					case SDLK_d:
+						controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getRight() * movementSpeed));
+						break;
+					case SDLK_KP_PLUS:
+						if(treshold <= 1.0) {treshold += 0.1;}
+						std::cout<<treshold<<std::endl;
+						break;
+					case SDLK_KP_MINUS:
+						if(treshold >= 0.2) {treshold -= 0.1;}
+						std::cout<<treshold<<std::endl;
+						break;
+				}
+				break;
 			// ##### INSERT CODE TO HANDLE ANY OTHER EVENTS HERE #####
 			}
 		}
-		
-		//Check for escape
-		keys = SDL_GetKeyState(NULL);
-		if( keys[SDLK_ESCAPE] ) {
-			done = 1;
-		} else if( keys[SDLK_w] ) {
-			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getDirection() * movementSpeed));
-		} else if ( keys[SDLK_s] ) {
-			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getDirection() * movementSpeed));
-		} else if ( keys[SDLK_a] ) {
-			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getRight() * movementSpeed));
-		} else if ( keys[SDLK_d] ) {
-			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getRight() * movementSpeed));
-		} else if ( keys[SDLK_LEFT] ) {
-			controlCamera->setHorizontalAngle(controlCamera->getHorizontalAngle() + 0.01);
-		} else if ( keys[SDLK_RIGHT] ) {
-			controlCamera->setHorizontalAngle(controlCamera->getHorizontalAngle() - 0.01);
-		} else if ( keys[SDLK_UP] ) {
-			controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() + 0.01);
-		} else if ( keys[SDLK_DOWN] ) {
-			controlCamera->setVerticalAngle(controlCamera->getVerticalAngle() - 0.01);
-		} else if ( keys[SDLK_c] ) {
-			currentTexture = texManager["render_tex"];
-		} else if ( keys[SDLK_x] ) {
-			currentTexture = texManager["normal_tex"];
-		} else if ( keys[SDLK_v] ) {
-			currentTexture = texManager["blur_tex"];
-		} else if ( keys[SDLK_b] ) {
-			currentTexture = texManager["bloom_tex"];
-		} else if ( keys[SDLK_KP_PLUS]) {
-			/*if(kernelSize <= 32) {
-				kernelSize += 2;
-			}*/
-			if(treshold <= 1.0) {treshold += 0.1;}
-			std::cout<<treshold<<std::endl;
-		} else if ( keys[SDLK_KP_MINUS]) {
-			/*if(kernelSize >= 10) {
-				kernelSize -= 2;
-			}*/
-			if(treshold >= 0.2) {treshold -= 0.1;}
-			std::cout<<treshold<<std::endl;
-		} else if ( keys[SDLK_h] ) {
-			useHdr = !useHdr;
-		}
-		
-
 		// Draw the screen
 		Render();
 		FPS++;
