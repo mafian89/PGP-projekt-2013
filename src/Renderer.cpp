@@ -58,6 +58,7 @@ void onInit() {
 	bloomSsaoShader.Use();
 		bloomSsaoShader.AddUniform("vPosition");
 		bloomSsaoShader.AddUniform("render_tex");
+		bloomSsaoShader.AddUniform("normal_tex");
 		bloomSsaoShader.AddUniform("treshold");
 	bloomSsaoShader.UnUse();
 
@@ -81,11 +82,11 @@ void onInit() {
 	// FBO INIT
 	////////////////////////////////////////////////////
 	fboManager->initFbo();
-	//fboManager->genRenderBuffer(width,height);
-	//fboManager->bindRenderBuffer();
+	fboManager->genRenderBuffer(width,height);
+	fboManager->bindRenderBuffer();
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["render_tex"]);
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["normal_tex"]);
-	fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
+	//fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
 	fboManager->setDrawBuffers();
 	if(!fboManager->checkFboStatus()){
 		return;
@@ -201,9 +202,12 @@ void Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBloomSsao->getFboId());
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texManager["normal_tex"]); 
 	bloomSsaoShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glUniform1i(bloomSsaoShader("render_tex"),0);
+		glUniform1i(bloomSsaoShader("normal_tex"),1);
 		glUniform1f(bloomSsaoShader("treshold"),treshold);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);
@@ -233,6 +237,7 @@ void Render(){
 
 	//Draw screen quad
 	glViewport(0,0,width,height);
+	//glDisable(GL_DEPTH_TEST);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
 	glActiveTexture(GL_TEXTURE1);
