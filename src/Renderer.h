@@ -46,6 +46,7 @@ string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
 GLSLShader quadShader;
 GLSLShader blurShader;
+GLSLShader bloomSsaoShader;
 unsigned int kernelSize = 16;
 bool useHdr = true;
 //Texture manager variables
@@ -55,6 +56,7 @@ GLuint currentTexture;
 //FBO manager variables
 CFboManager * fboManager = new CFboManager();
 CFboManager * fboManagerBlur = new CFboManager();
+CFboManager * fboManagerBloomSsao = new CFboManager();
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;

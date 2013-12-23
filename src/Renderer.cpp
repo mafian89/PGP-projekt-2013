@@ -20,6 +20,10 @@ void onInit() {
 	blurShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"blurShader.fp").c_str());
 	blurShader.CreateAndLinkProgram();
 
+	bloomSsaoShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
+	bloomSsaoShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"extractAndSsaoShader.fp").c_str());
+	bloomSsaoShader.CreateAndLinkProgram();
+
 
 	////////////////////////////////////////////////////
 	// LOCATION OF ATRIBUTES AND UNIFORMS
@@ -47,6 +51,12 @@ void onInit() {
 		blurShader.AddUniform("kernelSize");
 	blurShader.UnUse();
 
+	bloomSsaoShader.Use();
+		bloomSsaoShader.AddUniform("vPosition");
+		bloomSsaoShader.AddUniform("render_tex");
+		bloomSsaoShader.AddUniform("treshold");
+	bloomSsaoShader.UnUse();
+
 	////////////////////////////////////////////////////
 	// CAMERA INIT
 	////////////////////////////////////////////////////
@@ -59,6 +69,7 @@ void onInit() {
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("bloom_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	currentTexture = texManager["render_tex"];
 
 	////////////////////////////////////////////////////
@@ -80,6 +91,15 @@ void onInit() {
 	fboManagerBlur->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["blur_tex"]);
 	fboManagerBlur->setDrawBuffers();
 	if(!fboManagerBlur->checkFboStatus()){
+		return;
+	}
+
+	fboManagerBloomSsao->initFbo();
+	fboManagerBloomSsao->genRenderBuffer(width,height);
+	fboManagerBloomSsao->bindRenderBuffer();
+	fboManagerBloomSsao->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["bloom_tex"]);
+	fboManagerBloomSsao->setDrawBuffers();
+	if(!fboManagerBloomSsao->checkFboStatus()){
 		return;
 	}
 	
@@ -148,11 +168,28 @@ void Render(){
 	simpleShader.UnUse();
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
+	//Bloom and SSAO
+	glViewport(0,0,width,height);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBloomSsao->getFboId());
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
+	bloomSsaoShader.Use();
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		glUniform1i(bloomSsaoShader("render_tex"),0);
+		glUniform1f(bloomSsaoShader("treshold"),0.1);
+		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
+		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);
+		glVertexAttribPointer(bloomSsaoShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
+		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+	bloomSsaoShader.UnUse();
+	glBindTexture(GL_TEXTURE_2D, NULL); 
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+
 	//Blur
 	glViewport(0,0,width,height);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
+	glBindTexture(GL_TEXTURE_2D, texManager["bloom_tex"]); 
 	blurShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glUniform1i(blurShader("render_tex"),0);
@@ -197,7 +234,7 @@ int main(int argc, char** argv) {
 	Uint8 *keys;
 	//Initialize
 	if(SDL_Init(SDL_INIT_VIDEO)< 0) throw SDL_Exception();
-	SDL_EnableKeyRepeat(250,SDL_DEFAULT_REPEAT_INTERVAL);
+	//SDL_EnableKeyRepeat(100,SDL_DEFAULT_REPEAT_INTERVAL);
 	//Create a OpenGL window
 	screen = init(width,height,24,24,8);
 	SDL_WM_SetCaption(WINDOW_TITLE, WINDOW_TITLE);
@@ -269,6 +306,8 @@ int main(int argc, char** argv) {
 			currentTexture = texManager["normal_tex"];
 		} else if ( keys[SDLK_v] ) {
 			currentTexture = texManager["blur_tex"];
+		} else if ( keys[SDLK_b] ) {
+			currentTexture = texManager["bloom_tex"];
 		} else if ( keys[SDLK_KP_PLUS]) {
 			if(kernelSize <= 32) {
 				kernelSize += 2;
