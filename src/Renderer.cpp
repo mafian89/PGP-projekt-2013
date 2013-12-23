@@ -284,18 +284,6 @@ int main(int argc, char** argv) {
 					case SDLK_ESCAPE:
 						done=1;
 						break;
-					case SDLK_w:
-						controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getDirection() * movementSpeed));
-						break;
-					case SDLK_s:
-						controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getDirection() * movementSpeed));
-						break;
-					case SDLK_a:
-						controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getRight() * movementSpeed));
-						break;
-					case SDLK_d:
-						controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getRight() * movementSpeed));
-						break;
 					case SDLK_KP_PLUS:
 						if(treshold <= 1.0) {treshold += 0.1;}
 						std::cout<<treshold<<std::endl;
@@ -306,9 +294,20 @@ int main(int argc, char** argv) {
 						break;
 				}
 				break;
-			// ##### INSERT CODE TO HANDLE ANY OTHER EVENTS HERE #####
 			}
 		}
+
+		keys = SDL_GetKeyState(NULL);
+		if( keys[SDLK_w] ) {
+			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getDirection() * movementSpeed));
+		} else if ( keys[SDLK_s] ) {
+			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getDirection() * movementSpeed));
+		} else if ( keys[SDLK_a] ) {
+			controlCamera->setPosition(controlCamera->getPosition() - (controlCamera->getRight() * movementSpeed));
+		} else if ( keys[SDLK_d] ) {
+			controlCamera->setPosition(controlCamera->getPosition() + (controlCamera->getRight() * movementSpeed));
+		}
+
 		// Draw the screen
 		Render();
 		FPS++;
