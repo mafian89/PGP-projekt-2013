@@ -3,9 +3,9 @@
 CFboManager::CFboManager() {
 	useRenderBuffer = false;
 	attachmentCount = 0;
-	for(int i=0;i<5;i++) {
+	/*for(int i=0;i<5;i++) {
 		mrt[i] = GL_COLOR_ATTACHMENT0+i;
-	}
+	}*/
 }
 
 CFboManager::~CFboManager() {
@@ -39,6 +39,7 @@ void CFboManager::setDrawBuffers() {
 void CFboManager::bindToFbo(GLenum type, GLenum texture, GLuint textureId) {
 	glBindFramebuffer(GL_FRAMEBUFFER,_fboId);
 	glFramebufferTexture2D(GL_FRAMEBUFFER,type,texture,textureId,0);
+	mrt[attachmentCount] = type;
 	attachmentCount += 1;
 	//glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
