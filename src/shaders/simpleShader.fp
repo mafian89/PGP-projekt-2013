@@ -31,7 +31,7 @@ void main() {
 	vec3 lightIntesity = (ambient + diffuse + spec)*att;
 	fragColor = vec4(lightIntesity,1.0);
 	//NORMALY
-	normal = vec4(eyeNormal,v.z);
+	normal = vec4(tmpNormal,v.z);
 	//SPEC SLOZKA
 	//fragColor = vec4(spec, 1.0);
 }

@@ -43,6 +43,8 @@ void onInit() {
 		quadShader.AddUniform("color");
 		quadShader.AddUniform("bloom");
 		quadShader.AddUniform("useHDR");
+		quadShader.AddUniform("useSSAO");
+		quadShader.AddUniform("onlySSAO");
 		quadShader.AddUniform("exp");
 		quadShader.AddUniform("bloomStrength");
 		quadShader.AddUniform("bMax");
@@ -148,7 +150,11 @@ void onInit() {
 	TwAddVarRW(bar, "falloff", TW_TYPE_DOUBLE, &falloff, 
                " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
 	TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
-               " label='rad' min=0.0 max=1.0 step=0.005");
+               " label='rad' min=0.0 max=5.0 step=0.005");
+	TwAddVarRW(bar, "use SSAO", TW_TYPE_BOOL32, &useSSAO, 
+            " label='SSAO' true='YES' false='NO' key='h' help='Turns on/off SSAO' ");
+	TwAddVarRW(bar, "only SSAO", TW_TYPE_BOOL32, &onlySSAO, 
+            " label='only SSAO' true='YES' false='NO' key='h' help='Turns on/off SSAO component' ");
 
 
 	////////////////////////////////////////////////////
@@ -274,6 +280,8 @@ void Render(){
 		glUniform1i(quadShader("color"),0);
 		glUniform1i(quadShader("bloom"),1);
 		glUniform1i(quadShader("useHDR"),useHdr);
+		glUniform1i(quadShader("useSSAO"),useSSAO);
+		glUniform1i(quadShader("onlySSAO"),onlySSAO);
 		glUniform1f(quadShader("exp"),exposition);
 		glUniform1f(quadShader("bMax"),bMax);
 		glUniform1f(quadShader("bloomStrength"),bloomStrength);
