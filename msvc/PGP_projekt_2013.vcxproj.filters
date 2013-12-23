@@ -76,9 +76,6 @@
     <None Include="..\src\shaders\blurShader.fp">
       <Filter>Source Files\shaders</Filter>
     </None>
-    <None Include="..\src\shaders\textureRenderShader.fp">
-      <Filter>Source Files\shaders</Filter>
-    </None>
     <None Include="..\src\shaders\extractAndSsaoShader.fp">
       <Filter>Source Files\shaders</Filter>
     </None>

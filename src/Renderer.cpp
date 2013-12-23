@@ -39,12 +39,12 @@ void onInit() {
 	simpleShader.UnUse();
 
 	quadShader.Use();
-		simpleShader.AddAttribute("vPosition");
-		simpleShader.AddUniform("color");
-		simpleShader.AddUniform("bloom");
-		//simpleShader.AddUniform("useHDR");
+		quadShader.AddAttribute("vPosition");
+		quadShader.AddUniform("color");
+		quadShader.AddUniform("bloom");
+		simpleShader.AddUniform("useHDR");
 	quadShader.UnUse();
-
+	//std::cout<<texManager["render_tex"]<<" "<<texManager["normal_tex"]<<" "<<texManager["blur_tex"]<<" "<<texManager["bloom_tex"]<<std::endl;
 	blurShader.Use();
 		blurShader.AddAttribute("vPosition");
 		blurShader.AddUniform("render_tex");
@@ -73,6 +73,7 @@ void onInit() {
 	texManager.createTexture("bloom_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	currentTexture = texManager["render_tex"];
 
+	//std::cout<<texManager["render_tex"]<<" "<<texManager["normal_tex"]<<" "<<texManager["blur_tex"]<<" "<<texManager["bloom_tex"]<<std::endl;
 	////////////////////////////////////////////////////
 	// FBO INIT
 	////////////////////////////////////////////////////
@@ -205,8 +206,8 @@ void Render(){
 	glBindTexture(GL_TEXTURE_2D, NULL); 
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-	glViewport(0,0,width,height);
 	//Draw screen quad
+	glViewport(0,0,width,height);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
 	glActiveTexture(GL_TEXTURE1);
@@ -215,7 +216,7 @@ void Render(){
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glUniform1i(quadShader("color"),0);
 		glUniform1i(quadShader("bloom"),1);
-		//glUniform1i(quadShader("tmp"),useHdr);
+		glUniform1i(quadShader("useHDR"),useHdr);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
@@ -290,6 +291,9 @@ int main(int argc, char** argv) {
 					case SDLK_KP_MINUS:
 						if(treshold >= 0.2) {treshold -= 0.1;}
 						std::cout<<treshold<<std::endl;
+						break;
+					case SDLK_h:
+						useHdr = !useHdr;
 						break;
 				}
 				break;
