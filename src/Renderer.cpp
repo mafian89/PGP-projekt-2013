@@ -59,6 +59,7 @@ void onInit() {
 		bloomSsaoShader.AddUniform("vPosition");
 		bloomSsaoShader.AddUniform("render_tex");
 		bloomSsaoShader.AddUniform("normal_tex");
+		bloomSsaoShader.AddUniform("random_tex");
 		bloomSsaoShader.AddUniform("treshold");
 	bloomSsaoShader.UnUse();
 
@@ -71,6 +72,7 @@ void onInit() {
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
 	//texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("noise_tex",(textureDir + "noise.png"),0,0,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
@@ -204,10 +206,13 @@ void Render(){
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texManager["normal_tex"]); 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, texManager["noise_tex"]); 
 	bloomSsaoShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glUniform1i(bloomSsaoShader("render_tex"),0);
 		glUniform1i(bloomSsaoShader("normal_tex"),1);
+		glUniform1i(bloomSsaoShader("random_tex"),2);
 		glUniform1f(bloomSsaoShader("treshold"),treshold);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);

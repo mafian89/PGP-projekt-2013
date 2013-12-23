@@ -6,6 +6,7 @@ layout(location = 0) out vec4 FragColor;
 
 uniform sampler2D render_tex;
 uniform sampler2D normal_tex;
+uniform sampler2D random_tex;
 uniform float treshold;
 
 void main() {
