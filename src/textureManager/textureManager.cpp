@@ -44,7 +44,7 @@ void CTextureManager::createTexture(const string& texture, const string filePath
 		// clean up
 		SDL_FreeSurface(surface);
 	}
-	glBindTexture(GL_TEXTURE_2D,NULL);
+	//glBindTexture(GL_TEXTURE_2D,NULL);
 }
 
 GLuint CTextureManager::operator[] (const string& texture) {

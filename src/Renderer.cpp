@@ -13,7 +13,8 @@ void onInit() {
 	simpleShader.CreateAndLinkProgram();
 
 	quadShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
-	quadShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"textureRenderShader.fp").c_str());
+	//quadShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"textureRenderShader.fp").c_str());
+	quadShader.LoadFromFile(GL_FRAGMENT_SHADER, (shaderDir+"multiTexShader.fp").c_str());
 	quadShader.CreateAndLinkProgram();
 
 	blurShader.LoadFromFile(GL_VERTEX_SHADER, (shaderDir+"screenQuad.vp").c_str());
@@ -39,8 +40,8 @@ void onInit() {
 
 	quadShader.Use();
 		simpleShader.AddAttribute("vPosition");
-		simpleShader.AddUniform("fTexture");
-		simpleShader.AddUniform("bloomTex");
+		simpleShader.AddUniform("color");
+		simpleShader.AddUniform("bloom");
 		simpleShader.AddUniform("useHDR");
 	quadShader.UnUse();
 
@@ -65,7 +66,7 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
-	//texManager.createTexture("tex",(textureDir + "textura.png"),width,height,GL_NEAREST,0,0);
+	//texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
@@ -137,8 +138,9 @@ void Render(){
 	//std::cout<<"RENDER"<<std::endl;
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	//Cleat color
-	glClearColor(0.6,0.6,0.6,1.0);
+	//Clear color
+	glClearColor(0.0,0.0,0.6,1.0);
+	//glClearColor(0.0,0.0,0.0,1.0);
 	//Enable depth testing
 	glEnable( GL_DEPTH_TEST );
 	//View port
@@ -176,7 +178,7 @@ void Render(){
 	bloomSsaoShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glUniform1i(bloomSsaoShader("render_tex"),0);
-		glUniform1f(bloomSsaoShader("treshold"),0.1);
+		glUniform1f(bloomSsaoShader("treshold"),treshold);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);
 		glVertexAttribPointer(bloomSsaoShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
@@ -188,11 +190,11 @@ void Render(){
 	//Blur
 	glViewport(0,0,width,height);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, texManager["bloom_tex"]); 
 	blurShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glUniform1i(blurShader("render_tex"),0);
+		glUniform1i(blurShader("render_tex"),3);
 		glUniform2f(blurShader("res"),(float)width,(float)height);
 		glUniform1i(blurShader("kernelSize"),kernelSize);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
@@ -206,14 +208,14 @@ void Render(){
 	glViewport(0,0,width,height);
 	//Draw screen quad
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, currentTexture); 
+	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, texManager["blur_tex"]); 
 	quadShader.Use();
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
-		glUniform1i(quadShader("fTexture"),0);
-		glUniform1i(quadShader("bloomTex"),1);
-		glUniform1i(quadShader("useHDR"),useHdr);
+		glUniform1i(quadShader("color"),0);
+		glUniform1i(quadShader("bloom"),1);
+		//glUniform1i(quadShader("useHDR"),useHdr);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
@@ -309,13 +311,17 @@ int main(int argc, char** argv) {
 		} else if ( keys[SDLK_b] ) {
 			currentTexture = texManager["bloom_tex"];
 		} else if ( keys[SDLK_KP_PLUS]) {
-			if(kernelSize <= 32) {
+			/*if(kernelSize <= 32) {
 				kernelSize += 2;
-			}
+			}*/
+			if(treshold <= 1.0) {treshold += 0.1;}
+			std::cout<<treshold<<std::endl;
 		} else if ( keys[SDLK_KP_MINUS]) {
-			if(kernelSize >= 10) {
+			/*if(kernelSize >= 10) {
 				kernelSize -= 2;
-			}
+			}*/
+			if(treshold >= 0.2) {treshold -= 0.1;}
+			std::cout<<treshold<<std::endl;
 		} else if ( keys[SDLK_h] ) {
 			useHdr = !useHdr;
 		}
@@ -342,6 +348,7 @@ int main(int argc, char** argv) {
 	delete controlCamera;
 	delete fboManager;
 	delete fboManagerBlur;
+	delete fboManagerBloomSsao;
 	// Clean up and quit
 	SDL_Quit();
 	return 0;

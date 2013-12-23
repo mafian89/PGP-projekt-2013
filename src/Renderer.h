@@ -48,6 +48,7 @@ GLSLShader quadShader;
 GLSLShader blurShader;
 GLSLShader bloomSsaoShader;
 unsigned int kernelSize = 16;
+float treshold = 0.1;
 bool useHdr = true;
 //Texture manager variables
 string textureDir = "../textures/";

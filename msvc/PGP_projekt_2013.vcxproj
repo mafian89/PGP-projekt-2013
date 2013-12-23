@@ -98,6 +98,7 @@
   <ItemGroup>
     <None Include="..\src\shaders\blurShader.fp" />
     <None Include="..\src\shaders\extractAndSsaoShader.fp" />
+    <None Include="..\src\shaders\multiTexShader.fp" />
     <None Include="..\src\shaders\screenQuad.vp" />
     <None Include="..\src\shaders\simpleShader.fp" />
     <None Include="..\src\shaders\simpleShader.vp" />
