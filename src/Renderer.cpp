@@ -61,6 +61,11 @@ void onInit() {
 		bloomSsaoShader.AddUniform("normal_tex");
 		bloomSsaoShader.AddUniform("random_tex");
 		bloomSsaoShader.AddUniform("treshold");
+		bloomSsaoShader.AddUniform("totStrength");
+		bloomSsaoShader.AddUniform("strength");
+		bloomSsaoShader.AddUniform("offset");
+		bloomSsaoShader.AddUniform("falloff");
+		bloomSsaoShader.AddUniform("rad");
 	bloomSsaoShader.UnUse();
 
 	////////////////////////////////////////////////////
@@ -214,6 +219,11 @@ void Render(){
 		glUniform1i(bloomSsaoShader("normal_tex"),1);
 		glUniform1i(bloomSsaoShader("random_tex"),2);
 		glUniform1f(bloomSsaoShader("treshold"),treshold);
+		glUniform1f(bloomSsaoShader("totStrength"),1.38);
+		glUniform1f(bloomSsaoShader("strength"),0.07);
+		glUniform1f(bloomSsaoShader("offset"),18.0);
+		glUniform1f(bloomSsaoShader("falloff"),0.000002);
+		glUniform1f(bloomSsaoShader("rad"),0.006);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);
 		glVertexAttribPointer(bloomSsaoShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
