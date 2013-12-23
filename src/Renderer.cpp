@@ -43,6 +43,9 @@ void onInit() {
 		quadShader.AddUniform("color");
 		quadShader.AddUniform("bloom");
 		quadShader.AddUniform("useHDR");
+		quadShader.AddUniform("exp");
+		quadShader.AddUniform("bloomStrength");
+		quadShader.AddUniform("bMax");
 	quadShader.UnUse();
 
 	blurShader.Use();
@@ -216,6 +219,9 @@ void Render(){
 		glUniform1i(quadShader("color"),0);
 		glUniform1i(quadShader("bloom"),1);
 		glUniform1i(quadShader("useHDR"),useHdr);
+		glUniform1f(quadShader("exp"),1.0);
+		glUniform1f(quadShader("bMax"),1.2);
+		glUniform1f(quadShader("bloomStrength"),0.8);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
