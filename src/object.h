@@ -17,7 +17,8 @@ public:
 	//void unbindBuffers();
 	void setTexture(GLuint _tex);
 	void setMaterial(glm::vec3 _mat);
-	void translate(glm::vec3 _to);
+	void translateModel(glm::vec3 _to);
+	void rotateModel(float _degrees, glm::vec3 _axis);
 
 	unsigned int getIndexSize();
 	GLuint getObjectTexture();

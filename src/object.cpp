@@ -27,8 +27,12 @@ CObject::~CObject(){
 	indexed_normals.clear();
 }
 
-void CObject::translate(glm::vec3 _to) {
+void CObject::translateModel(glm::vec3 _to) {
 	m = glm::translate(m,_to);
+}
+
+void CObject::rotateModel(float _degrees, glm::vec3 _axis){
+	m = glm::rotate(m,_degrees,_axis);
 }
 
 void CObject::genBuffers(){

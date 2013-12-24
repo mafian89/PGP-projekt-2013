@@ -124,6 +124,8 @@ void onInit() {
 	// LOAD OBJECTS
 	////////////////////////////////////////////////////
 	obj1 = new CObject(objectDir + "crates.obj");
+	//obj1->translateModel(glm::vec3(0.0,0.0,-2.0));
+	//obj1->rotateModel(90.0,glm::vec3(0.0,1.0,0.0));
 	
 	////////////////////////////////////////////////////
 	// ANT TWEAK BAR
@@ -204,9 +206,10 @@ void Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManager->getFboId());
 	simpleShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix())));
-		glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix())); 
-		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix())); 
+		glm::mat4 m = obj1->getObjectModelMatrix();
+		glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix()*m)));
+		glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix()*m)); 
+		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix()*m)); 
 		glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
 		glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
 		glBindBuffer(GL_ARRAY_BUFFER, obj1->_VBO);
