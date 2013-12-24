@@ -123,7 +123,11 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// LOAD OBJECTS
 	////////////////////////////////////////////////////
-	obj1 = new CObject(objectDir + "crates.obj");
+	sceneManager->addObject(new CObject(objectDir + "crates.obj"));
+	//tmp = new CObject(objectDir + "crates.obj");
+	//tmp->translateModel(glm::vec3(0.0,0.0,-10.0));
+	//sceneManager->addObject(tmp);
+	//obj1 = new CObject(objectDir + "crates.obj");
 	//obj1->translateModel(glm::vec3(0.0,0.0,-2.0));
 	//obj1->rotateModel(90.0,glm::vec3(0.0,1.0,0.0));
 	
@@ -206,22 +210,24 @@ void Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManager->getFboId());
 	simpleShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glm::mat4 m = obj1->getObjectModelMatrix();
-		glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix()*m)));
-		glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix()*m)); 
-		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix()*m)); 
-		glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
-		glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
-		glBindBuffer(GL_ARRAY_BUFFER, obj1->_VBO);
-		glEnableVertexAttribArray(simpleShader["vPosition"]);
-		glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		for(int i = 0; i < sceneManager->scene.size(); i++) {
+			glm::mat4 m = sceneManager->scene[i]->getObjectModelMatrix();
+			glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix()*m)));
+			glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix()*m)); 
+			glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix()*m)); 
+			glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
+			glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
+			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_VBO);
+			glEnableVertexAttribArray(simpleShader["vPosition"]);
+			glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 		
-		glBindBuffer(GL_ARRAY_BUFFER, obj1->_NBO);
-		glEnableVertexAttribArray(simpleShader["vNormal"]);
-		glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_NBO);
+			glEnableVertexAttribArray(simpleShader["vNormal"]);
+			glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj1->_EBO);
-		glDrawElements(GL_TRIANGLES, obj1->getIndexSize(), GL_UNSIGNED_INT, NULL);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sceneManager->scene[i]->_EBO);
+			glDrawElements(GL_TRIANGLES, sceneManager->scene[i]->getIndexSize(), GL_UNSIGNED_INT, NULL);
+		}
 	simpleShader.UnUse();
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
@@ -418,7 +424,9 @@ int main(int argc, char** argv) {
 	delete fboManager;
 	delete fboManagerBlur;
 	delete fboManagerBloomSsao;
-	delete obj1;
+	//delete obj1;
+	delete sceneManager;
+	delete tmp;
 	// Terminate AntTweakBar
     TwTerminate();
 	// Clean up and quit

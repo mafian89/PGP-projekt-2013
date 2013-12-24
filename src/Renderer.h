@@ -9,6 +9,7 @@
 #include "commonIncludes.h"
 #include "textureManager/textureManager.h"
 #include "fboManager/fboManager.h"
+#include "sceneManager.h"
 
 //Docasne
 #include "object.h"
@@ -87,13 +88,14 @@ float movementSpeed = 0.75f;
 
 //Scene objects -TMP
 string objectDir = "../models/";
-CObject * obj1;
+CObject *tmp;
+
+//Scene manager
+CSceneManager * sceneManager = new CSceneManager();
 
 ///////////////////////////////////////////
-// TMP MODEL VARIABLES
+// SCREEN QUAD MODEL VARIABLES
 ///////////////////////////////////////////
-GLuint sphereVBO;
-GLuint sphereEBO;
 GLuint screenQuadVBO;
 
 ///////////////////////////////////////////

@@ -9,7 +9,9 @@ public:
 	CSceneManager();
 	~CSceneManager();
 
-	vector<CObject> scene;
+	void addObject(CObject * o);
+
+	vector<CObject*> scene;
 };
 
 #endif
