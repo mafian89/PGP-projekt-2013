@@ -4,12 +4,14 @@
 // INCLUDES
 ///////////////////////////////////////////
 #include "GLSLshader/GLSLShader.h"
-#include "tmp_model/sphere.h"
 #include "screenQuad.h"
 #include "camera/controlCamera.h"
 #include "commonIncludes.h"
 #include "textureManager/textureManager.h"
 #include "fboManager/fboManager.h"
+
+//Docasne
+#include "object.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
@@ -82,6 +84,10 @@ float mouseSpeed =  0.05f;
 int _x,_y;
 bool moved = true;
 float movementSpeed = 0.75f;
+
+//Scene objects -TMP
+string objectDir = "../models/";
+CObject * obj1;
 
 ///////////////////////////////////////////
 // TMP MODEL VARIABLES

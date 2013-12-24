@@ -118,6 +118,11 @@ void onInit() {
 	if(!fboManagerBloomSsao->checkFboStatus()){
 		return;
 	}
+
+	////////////////////////////////////////////////////
+	// LOAD OBJECTS
+	////////////////////////////////////////////////////
+	obj1 = new CObject(objectDir + "crates.obj");
 	
 	////////////////////////////////////////////////////
 	// ANT TWEAK BAR
@@ -160,15 +165,6 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
 	////////////////////////////////////////////////////
-	//Sphere
-	glGenBuffers(1, &sphereVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(sphereVertices), sphereVertices, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &sphereEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphere), sphere, GL_STATIC_DRAW);
-
 	//Screen quad
 	glGenBuffers(1,&screenQuadVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
@@ -212,13 +208,16 @@ void Render(){
 		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix())); 
 		glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
 		glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
-		glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, obj1->_VBO);
 		glEnableVertexAttribArray(simpleShader["vPosition"]);
-		glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(SphereVertex), (void*)offsetof(SphereVertex, position));
+		glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, obj1->_NBO);
 		glEnableVertexAttribArray(simpleShader["vNormal"]);
-		glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, sizeof(SphereVertex), (void*)offsetof(SphereVertex, normal));
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
-		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
+		glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj1->_EBO);
+		glDrawElements(GL_TRIANGLES, obj1->getIndexSize(), GL_UNSIGNED_INT, NULL);
 	simpleShader.UnUse();
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
@@ -414,6 +413,7 @@ int main(int argc, char** argv) {
 	delete fboManager;
 	delete fboManagerBlur;
 	delete fboManagerBloomSsao;
+	delete obj1;
 	// Terminate AntTweakBar
     TwTerminate();
 	// Clean up and quit

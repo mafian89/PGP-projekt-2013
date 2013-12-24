@@ -19,16 +19,20 @@ public:
 	void setMaterial(glm::vec3 _mat);
 	void translate(glm::vec3 _to);
 
+	unsigned int getIndexSize();
 	GLuint getObjectTexture();
 	glm::vec3 getObjetMaterial();
 	glm::mat4 getObjectModelMatrix();
-private:
+
 	GLuint _VBO;
 	GLuint _UVBO;
 	GLuint _NBO;
 	GLuint _EBO;
+private:
 	GLuint _Texture;
 	glm::vec3 _material;
+
+	unsigned int indexSize;
 
 	vector<glm::vec3> vertices;
 	vector<glm::vec2> uvs;

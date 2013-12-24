@@ -8,8 +8,12 @@ CObject::CObject(const string path){
 	bool loaded = loadFromFile(path);
 	if(!loaded) {
 		std::cerr<<"[ERROR] Cannot load object "<<path<<"!"<<std::endl;
+	} else {
+		std::cout<<"[INFO] Object "<<path<<" has been successufully loaded!"<<std::endl;
 	}
 	m = glm::mat4(1.0);
+	genBuffers();
+	fillBuffers();
 }
 
 CObject::~CObject(){
@@ -46,6 +50,7 @@ void CObject::fillBuffers(){
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0] , GL_STATIC_DRAW);
+	indexSize = indices.size();
 }
 
 void CObject::setTexture(GLuint _tex){
@@ -66,6 +71,10 @@ glm::vec3 CObject::getObjetMaterial(){
 
 glm::mat4 CObject::getObjectModelMatrix(){
 	return m;
+}
+
+unsigned int CObject::getIndexSize(){
+	return indexSize;
 }
 
 bool CObject::loadFromFile(const string path){
