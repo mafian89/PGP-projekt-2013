@@ -57,7 +57,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL.lib;glew32.lib;OpenGL32.lib;assimp.lib;SDL_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL.lib;glew32.lib;OpenGL32.lib;SDL_image.lib;AntTweakBar.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
@@ -82,6 +82,7 @@
     <ClCompile Include="..\src\camera\controlCamera.cpp" />
     <ClCompile Include="..\src\fboManager\fboManager.cpp" />
     <ClCompile Include="..\src\GLSLshader\GLSLShader.cpp" />
+    <ClCompile Include="..\src\object.cpp" />
     <ClCompile Include="..\src\Renderer.cpp" />
     <ClCompile Include="..\src\textureManager\textureManager.cpp" />
   </ItemGroup>
@@ -90,6 +91,7 @@
     <ClInclude Include="..\src\commonIncludes.h" />
     <ClInclude Include="..\src\fboManager\fboManager.h" />
     <ClInclude Include="..\src\GLSLshader\GLSLShader.h" />
+    <ClInclude Include="..\src\object.h" />
     <ClInclude Include="..\src\Renderer.h" />
     <ClInclude Include="..\src\screenQuad.h" />
     <ClInclude Include="..\src\textureManager\textureManager.h" />

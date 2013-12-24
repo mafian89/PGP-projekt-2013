@@ -36,6 +36,9 @@
     <ClCompile Include="..\src\fboManager\fboManager.cpp">
       <Filter>Source Files\code</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\object.cpp">
+      <Filter>Source Files\code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\GLSLshader\GLSLShader.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\fboManager\fboManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

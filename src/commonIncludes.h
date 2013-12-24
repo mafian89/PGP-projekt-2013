@@ -20,5 +20,9 @@
 #include <iostream>
 #include <cmath>
 #include <map>
+#include <vector>
+
+#include "obj_loader/objloader.hpp"
+#include "obj_loader/vboindexer.hpp"
 
 #endif

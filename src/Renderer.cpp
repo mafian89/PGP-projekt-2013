@@ -142,15 +142,15 @@ void onInit() {
 
 
 	TwAddVarRW(bar, "totStrength", TW_TYPE_DOUBLE, &totStrength, 
-               " label='totStrength' min=1.0 max=5.0 step=0.1 ");
+               " label='totStrength' min=1.0 max=10.0 step=0.1 ");
 	TwAddVarRW(bar, "strength", TW_TYPE_DOUBLE, &strength, 
                " label='strength' min=0.0 max=2.0 step=0.01 ");
 	TwAddVarRW(bar, "offset", TW_TYPE_DOUBLE, &offset, 
                " label='offset' min=1.0 max=20.0 step=1.0 ");
 	TwAddVarRW(bar, "falloff", TW_TYPE_DOUBLE, &falloff, 
                " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
-	TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
-               " label='rad' min=0.0 max=5.0 step=0.005");
+	//TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
+ //              " label='rad' min=0.0 max=5.0 step=0.005");
 	/*TwAddVarRW(bar, "use SSAO", TW_TYPE_BOOL32, &useSSAO, 
             " label='SSAO' true='YES' false='NO' help='Turns on/off SSAO' ");
 	TwAddVarRW(bar, "only SSAO", TW_TYPE_BOOL32, &onlySSAO, 

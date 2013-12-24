@@ -15,8 +15,9 @@
 #pragma comment(lib, "SDL.lib")
 #pragma comment(lib, "OpenGL32.lib")
 #pragma comment(lib, "glew32.lib")
-#pragma comment(lib, "assimp.lib")
+//#pragma comment(lib, "assimp.lib")
 #pragma comment(lib, "SDL_image.lib")
+#pragma comment(lib, "AntTweakBar.lib")
 #endif//_MSC_VER
 
 

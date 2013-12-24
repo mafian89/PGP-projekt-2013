@@ -27,9 +27,9 @@ float computeSSAO(sampler2D normal_tex, sampler2D random_tex) {
 	//const vec3 pSphere[12] = vec3[](vec3(-0.13657719, 0.30651027, 0.16118456),vec3(-0.14714938, 0.33245975, -0.113095455),vec3(0.030659059, 0.27887347, -0.7332209),vec3(0.009913514, -0.89884496, 0.07381549),vec3(0.040318526, 0.40091, 0.6847858),vec3(0.22311053, -0.3039437, -0.19340435),vec3(0.36235332, 0.21894878, -0.05407306),vec3(-0.15198798, -0.38409665, -0.46785462),vec3(-0.013492276, -0.5345803, 0.11307949),vec3(-0.4972847, 0.037064247, -0.4381323),vec3(-0.024175806, -0.008928787, 0.17719103),vec3(0.694014, -0.122672155, 0.33098832));
 	const vec3 pSphere[10] = vec3[](vec3(-0.010735935, 0.01647018, 0.0062425877),vec3(-0.06533369, 0.3647007, -0.13746321),vec3(-0.6539235, -0.016726388, -0.53000957),vec3(0.40958285, 0.0052428036, -0.5591124),vec3(-0.1465366, 0.09899267, 0.15571679),vec3(-0.44122112, -0.5458797, 0.04912532),vec3(0.03755566, -0.10961345, -0.33040273),vec3(0.019100213, 0.29652783, 0.066237666),vec3(0.8765323, 0.011236004, 0.28265962),vec3(0.29264435, -0.40794238, 0.15964167));
 	// grab a normal for reflecting the sample rays later on
-	vec3 fres = normalize((texture2D(random_tex,texCoord*offset).xyz*2.0) - vec3(1.0));
+	vec3 fres = normalize((texture(random_tex,texCoord*offset).xyz*2.0) - vec3(1.0));
  
-	vec4 currentPixelSample = texture2D(normal_tex,texCoord);
+	vec4 currentPixelSample = texture(normal_tex,texCoord);
  
 	float currentPixelDepth = currentPixelSample.a;
  
@@ -39,7 +39,7 @@ float computeSSAO(sampler2D normal_tex, sampler2D random_tex) {
 	vec3 norm = currentPixelSample.xyz;
  
 	float bl = 0.0;
-	// adjust for the depth ( not shure if this is good..)
+	// adjust for the depth
 	float radD = rad/currentPixelDepth;
  
 	vec3 ray, se, occNorm;
@@ -54,7 +54,7 @@ float computeSSAO(sampler2D normal_tex, sampler2D random_tex) {
 		se = ep + sign(dot(ray,norm) )*ray;
  
 		// get the depth of the occluder fragment
-		vec4 occluderFragment = texture2D(normal_tex,se.xy);
+		vec4 occluderFragment = texture(normal_tex,se.xy);
  
 		// get the normal of the occluder fragment
 		occNorm = occluderFragment.xyz;
