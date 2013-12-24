@@ -39,8 +39,10 @@ void CFboManager::setDrawBuffers() {
 void CFboManager::bindToFbo(GLenum type, GLenum texture, GLuint textureId) {
 	glBindFramebuffer(GL_FRAMEBUFFER,_fboId);
 	glFramebufferTexture2D(GL_FRAMEBUFFER,type,texture,textureId,0);
-	mrt[attachmentCount] = type;
-	attachmentCount += 1;
+	if(type != GL_DEPTH_ATTACHMENT) {
+		mrt[attachmentCount] = type;
+		attachmentCount += 1;
+	}
 	//glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 
