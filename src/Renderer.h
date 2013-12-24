@@ -43,7 +43,7 @@ unsigned width = 800;
 unsigned height = 600;
 bool useFrameRateCap = true;
 int FPS = 0;
-glm::vec3 lightPosition(.0,10.0,.0);
+glm::vec3 lightPosition(.0,10.0,2.0);
 
 //AntTweak bar
 TwBar *bar;
@@ -58,7 +58,7 @@ double totStrength = 2.8;
 double strength = 1.21;
 double offset = 9.0;
 double falloff = 0.00000001;
-double rad = 0.02;
+double rad = 0.01;
 
 //shader variables
 string shaderDir = "../src/shaders/";
