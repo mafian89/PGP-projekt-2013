@@ -124,9 +124,9 @@ void onInit() {
 	// LOAD OBJECTS
 	////////////////////////////////////////////////////
 	sceneManager->addObject(new CObject(objectDir + "crates.obj"));
-	//tmp = new CObject(objectDir + "crates.obj");
-	//tmp->translateModel(glm::vec3(0.0,0.0,-10.0));
-	//sceneManager->addObject(tmp);
+	tmp = new CObject(objectDir + "crates.obj");
+	tmp->translateModel(glm::vec3(0.0,0.0,-10.0));
+	sceneManager->addObject(tmp);
 	//obj1 = new CObject(objectDir + "crates.obj");
 	//obj1->translateModel(glm::vec3(0.0,0.0,-2.0));
 	//obj1->rotateModel(90.0,glm::vec3(0.0,1.0,0.0));
