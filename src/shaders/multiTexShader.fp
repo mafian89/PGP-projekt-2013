@@ -9,6 +9,8 @@ uniform bool useSSAO;
 
 uniform bool onlySSAO;
 
+uniform float scale;
+
 uniform float exp;
 uniform float bMax;
 uniform float bloomStrength;
@@ -22,12 +24,12 @@ void main() {
 	//float bMax = 1.2;
 	//float bloomStrength = 0.8;
 	vec4 result = vec4(0.0);
-	vec3 bloomedSample = texture(bloom,texCoord*0.5).rgb * bloomStrength;
-	float ssao = texture(bloom,texCoord*0.5).a;
+	vec3 bloomedSample = texture(bloom,texCoord*scale).rgb * bloomStrength;
+	float ssao = texture(bloom,texCoord*scale).a;
 	vec4 colorSample = texture(color,texCoord);
 	float toneMap = exp * (exp / bMax + 1.0) / (exp + 1.0);
 	if(useHDR) {
-		FragColor = (texture(color, texCoord) + texture(bloom,texCoord*0.5) * bloomStrength) * toneMap;
+		FragColor = (texture(color, texCoord) + vec4(bloomedSample,1.0)) * toneMap;
 	} else {
 		FragColor = texture(color, texCoord);
 	}
@@ -35,7 +37,7 @@ void main() {
 		if(!useHDR) {
 			FragColor = texture(color, texCoord) * ssao;
 		} else {
-			FragColor = ((texture(color, texCoord) + texture(bloom,texCoord*0.5) * bloomStrength) * toneMap) * ssao;
+			FragColor = ((texture(color, texCoord) + vec4(bloomedSample,1.0)) * toneMap) * ssao;
 		}
 	} else {
 		FragColor = texture(color, texCoord);

@@ -56,7 +56,7 @@ bool useSSAO = true;
 bool onlySSAO = false;
 double totStrength = 2.8;
 double strength = 1.21;
-double offset = 9.0;
+double offset = 20.0;
 double falloff = 0.00000001;
 double rad = 0.01;
 

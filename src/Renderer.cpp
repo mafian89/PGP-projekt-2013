@@ -45,6 +45,7 @@ void onInit() {
 		quadShader.AddUniform("useHDR");
 		quadShader.AddUniform("useSSAO");
 		quadShader.AddUniform("onlySSAO");
+		quadShader.AddUniform("scale");
 		quadShader.AddUniform("exp");
 		quadShader.AddUniform("bloomStrength");
 		quadShader.AddUniform("bMax");
@@ -122,7 +123,7 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// LOAD OBJECTS
 	////////////////////////////////////////////////////
-	obj1 = new CObject(objectDir + "crates.obj");
+	obj1 = new CObject(objectDir + "sibenik_-z_forward_1.obj");
 	
 	////////////////////////////////////////////////////
 	// ANT TWEAK BAR
@@ -151,7 +152,7 @@ void onInit() {
 	TwAddVarRW(bar, "strength", TW_TYPE_DOUBLE, &strength, 
                " label='strength' min=0.0 max=2.0 step=0.01 ");
 	TwAddVarRW(bar, "offset", TW_TYPE_DOUBLE, &offset, 
-               " label='offset' min=1.0 max=20.0 step=1.0 ");
+               " label='offset' min=1.0 max=40.0 step=1.0 ");
 	TwAddVarRW(bar, "falloff", TW_TYPE_DOUBLE, &falloff, 
                " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
 	//TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
@@ -284,6 +285,7 @@ void Render(){
 		glUniform1f(quadShader("exp"),exposition);
 		glUniform1f(quadShader("bMax"),bMax);
 		glUniform1f(quadShader("bloomStrength"),bloomStrength);
+		glUniform1f(quadShader("scale"),0.5);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);

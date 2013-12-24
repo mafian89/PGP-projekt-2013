@@ -22,6 +22,18 @@ void main(){
 		}
 	}
 	tmp = tmp/(kernelSize*kernelSize);
+	/*
+	float tmpA = 1.0;
+
+	for(int i=-1; i < 1; i++){
+		for(int j=-1; j < 1; j++) {
+			//blurredFragment += texture(render_tex,vec2(texCoord.x+i*stepx, texCoord.y+j*stepy));
+			tmpA += texture(render_tex,vec2(texCoord.x+i*stepx, texCoord.y+j*stepy)).a;
+		}
+	}
+	tmpA = tmpA/(3*3);*/
+
+	
 	blurredFragment = vec4(tmp,texture(render_tex,texCoord).a);
 	//blurredFragment = blurredFragment/(kernelSize*kernelSize);
 }
