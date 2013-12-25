@@ -22,7 +22,7 @@ void main(){
 		}
 	}
 	tmp = tmp/(kernelSize*kernelSize);
-	/*
+	
 	float tmpA = 1.0;
 
 	for(int i=-1; i < 1; i++){
@@ -31,9 +31,9 @@ void main(){
 			tmpA += texture(render_tex,vec2(texCoord.x+i*stepx, texCoord.y+j*stepy)).a;
 		}
 	}
-	tmpA = tmpA/(3*3);*/
+	tmpA = tmpA/(2*2);
 
 	
-	blurredFragment = vec4(tmp,texture(render_tex,texCoord).a);
+	blurredFragment = vec4(tmp,tmpA);
 	//blurredFragment = blurredFragment/(kernelSize*kernelSize);
 }
