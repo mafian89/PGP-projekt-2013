@@ -42,9 +42,15 @@ void onInit() {
 		quadShader.AddAttribute("vPosition");
 		quadShader.AddUniform("color");
 		quadShader.AddUniform("bloom");
-		simpleShader.AddUniform("useHDR");
+		quadShader.AddUniform("useHDR");
+		quadShader.AddUniform("useSSAO");
+		quadShader.AddUniform("onlySSAO");
+		quadShader.AddUniform("scale");
+		quadShader.AddUniform("exp");
+		quadShader.AddUniform("bloomStrength");
+		quadShader.AddUniform("bMax");
 	quadShader.UnUse();
-	//std::cout<<texManager["render_tex"]<<" "<<texManager["normal_tex"]<<" "<<texManager["blur_tex"]<<" "<<texManager["bloom_tex"]<<std::endl;
+
 	blurShader.Use();
 		blurShader.AddAttribute("vPosition");
 		blurShader.AddUniform("render_tex");
@@ -55,7 +61,14 @@ void onInit() {
 	bloomSsaoShader.Use();
 		bloomSsaoShader.AddUniform("vPosition");
 		bloomSsaoShader.AddUniform("render_tex");
+		bloomSsaoShader.AddUniform("normal_tex");
+		bloomSsaoShader.AddUniform("random_tex");
 		bloomSsaoShader.AddUniform("treshold");
+		bloomSsaoShader.AddUniform("totStrength");
+		bloomSsaoShader.AddUniform("strength");
+		bloomSsaoShader.AddUniform("offset");
+		bloomSsaoShader.AddUniform("falloff");
+		bloomSsaoShader.AddUniform("rad");
 	bloomSsaoShader.UnUse();
 
 	////////////////////////////////////////////////////
@@ -67,21 +80,23 @@ void onInit() {
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
 	//texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("noise_tex",(textureDir + "noise.png"),0,0,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("bloom_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
+	texManager.createTexture("depth_tex","",width,height,GL_NEAREST,GL_DEPTH_COMPONENT32,GL_DEPTH_COMPONENT);
 	currentTexture = texManager["render_tex"];
 
-	//std::cout<<texManager["render_tex"]<<" "<<texManager["normal_tex"]<<" "<<texManager["blur_tex"]<<" "<<texManager["bloom_tex"]<<std::endl;
 	////////////////////////////////////////////////////
 	// FBO INIT
 	////////////////////////////////////////////////////
 	fboManager->initFbo();
-	fboManager->genRenderBuffer(width,height);
-	fboManager->bindRenderBuffer();
+	//fboManager->genRenderBuffer(width,height);
+	//fboManager->bindRenderBuffer();
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["render_tex"]);
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["normal_tex"]);
+	fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
 	fboManager->setDrawBuffers();
 	if(!fboManager->checkFboStatus()){
 		return;
@@ -104,20 +119,59 @@ void onInit() {
 	if(!fboManagerBloomSsao->checkFboStatus()){
 		return;
 	}
+
+	////////////////////////////////////////////////////
+	// LOAD OBJECTS
+	////////////////////////////////////////////////////
+	sceneManager->addObject(new CObject(objectDir + "crates.obj"));
+	tmp = new CObject(objectDir + "crates.obj");
+	tmp->translateModel(glm::vec3(0.0,0.0,-10.0));
+	sceneManager->addObject(tmp);
+	//obj1 = new CObject(objectDir + "crates.obj");
+	//obj1->translateModel(glm::vec3(0.0,0.0,-2.0));
+	//obj1->rotateModel(90.0,glm::vec3(0.0,1.0,0.0));
 	
+	////////////////////////////////////////////////////
+	// ANT TWEAK BAR
+	////////////////////////////////////////////////////
+	// Initialize AntTweakBar
+    TwInit(TW_OPENGL, NULL);
+    // Tell the window size to AntTweakBar
+    TwWindowSize(width, height);
+    // Create a tweak bar
+    bar = TwNewBar("Parametry");
+	TwDefine(" GLOBAL help='HELP!!!' "); // Message added to the help bar.
+	TwAddVarRW(bar, "Exposition for tonemapping", TW_TYPE_DOUBLE, &exposition, 
+               " label='Exposition' keyIncr=1 keyDecr=CTRL+1 min=0 max=2 step=0.1 ");
+	TwAddVarRW(bar, "Bright Max for tonemapping", TW_TYPE_DOUBLE, &bMax, 
+               " label='Bright Max' keyIncr=2 keyDecr=CTRL+2 min=0.1 max=1.50 step=0.025 ");
+	TwAddVarRW(bar, "Bloom strength for tonemapping", TW_TYPE_DOUBLE, &bloomStrength, 
+               " label='Bloom strength' keyIncr=3 keyDecr=CTRL+3 min=0 max=3 step=0.1 ");
+	TwAddVarRW(bar, "Treshold for blurring", TW_TYPE_DOUBLE, &treshold, 
+               " label='Treshold' keyIncr=4 keyDecr=CTRL+4 min=0.1 max=1 step=0.1 ");
+	/*TwAddVarRW(bar, "use HDR", TW_TYPE_BOOL32, &useHdr, 
+            " label='HDR' true='YES' false='NO' key='h' help='Turns on/off hdr' ");*/
+
+
+	TwAddVarRW(bar, "totStrength", TW_TYPE_DOUBLE, &totStrength, 
+               " label='totStrength' min=1.0 max=10.0 step=0.1 ");
+	TwAddVarRW(bar, "strength", TW_TYPE_DOUBLE, &strength, 
+               " label='strength' min=0.0 max=2.0 step=0.01 ");
+	TwAddVarRW(bar, "offset", TW_TYPE_DOUBLE, &offset, 
+               " label='offset' min=1.0 max=40.0 step=1.0 ");
+	TwAddVarRW(bar, "falloff", TW_TYPE_DOUBLE, &falloff, 
+               " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
+	//TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
+ //              " label='rad' min=0.0 max=5.0 step=0.005");
+	/*TwAddVarRW(bar, "use SSAO", TW_TYPE_BOOL32, &useSSAO, 
+            " label='SSAO' true='YES' false='NO' help='Turns on/off SSAO' ");
+	TwAddVarRW(bar, "only SSAO", TW_TYPE_BOOL32, &onlySSAO, 
+            " label='only SSAO' true='YES' false='NO' help='Turns on/off SSAO component' ");*/
+
 
 	////////////////////////////////////////////////////
 	// OTHER STUFF BELONGS HERE
 	////////////////////////////////////////////////////
-	//Sphere
-	glGenBuffers(1, &sphereVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(sphereVertices), sphereVertices, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &sphereEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphere), sphere, GL_STATIC_DRAW);
-
 	//Screen quad
 	glGenBuffers(1,&screenQuadVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
@@ -156,18 +210,24 @@ void Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManager->getFboId());
 	simpleShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix())));
-		glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix())); 
-		glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix())); 
-		glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
-		glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
-		glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
-		glEnableVertexAttribArray(simpleShader["vPosition"]);
-		glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(SphereVertex), (void*)offsetof(SphereVertex, position));
-		glEnableVertexAttribArray(simpleShader["vNormal"]);
-		glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, sizeof(SphereVertex), (void*)offsetof(SphereVertex, normal));
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereEBO);
-		glDrawElements(GL_TRIANGLES, sizeof(sphere)/sizeof(*sphere)*3, sphereIndexType, NULL);
+		for(int i = 0; i < sceneManager->scene.size(); i++) {
+			glm::mat4 m = sceneManager->scene[i]->getObjectModelMatrix();
+			glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix()*m)));
+			glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix()*m)); 
+			glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix()*m)); 
+			glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
+			glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
+			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_VBO);
+			glEnableVertexAttribArray(simpleShader["vPosition"]);
+			glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		
+			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_NBO);
+			glEnableVertexAttribArray(simpleShader["vNormal"]);
+			glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sceneManager->scene[i]->_EBO);
+			glDrawElements(GL_TRIANGLES, sceneManager->scene[i]->getIndexSize(), GL_UNSIGNED_INT, NULL);
+		}
 	simpleShader.UnUse();
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
@@ -176,10 +236,21 @@ void Render(){
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBloomSsao->getFboId());
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texManager["normal_tex"]); 
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, texManager["noise_tex"]); 
 	bloomSsaoShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glUniform1i(bloomSsaoShader("render_tex"),0);
+		glUniform1i(bloomSsaoShader("normal_tex"),1);
+		glUniform1i(bloomSsaoShader("random_tex"),2);
 		glUniform1f(bloomSsaoShader("treshold"),treshold);
+		glUniform1f(bloomSsaoShader("totStrength"),totStrength);
+		glUniform1f(bloomSsaoShader("strength"),strength);
+		glUniform1f(bloomSsaoShader("offset"),offset);
+		glUniform1f(bloomSsaoShader("falloff"),falloff);
+		glUniform1f(bloomSsaoShader("rad"),rad);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
 		glEnableVertexAttribArray(bloomSsaoShader["vPosition"]);
 		glVertexAttribPointer(bloomSsaoShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
@@ -188,14 +259,14 @@ void Render(){
 	glBindTexture(GL_TEXTURE_2D, NULL); 
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 
-	//Blur
+	//Blur - undersample
 	glViewport(0,0,width/2,height/2);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboManagerBlur->getFboId());
-	glActiveTexture(GL_TEXTURE3);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["bloom_tex"]); 
 	blurShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glUniform1i(blurShader("render_tex"),3);
+		glUniform1i(blurShader("render_tex"),0);
 		glUniform2f(blurShader("res"),(float)width/2.0,(float)height/2.0);
 		glUniform1i(blurShader("kernelSize"),kernelSize);
 		glBindBuffer(GL_ARRAY_BUFFER, screenQuadVBO);
@@ -208,6 +279,7 @@ void Render(){
 
 	//Draw screen quad
 	glViewport(0,0,width,height);
+	//glDisable(GL_DEPTH_TEST);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texManager["render_tex"]); 
 	glActiveTexture(GL_TEXTURE1);
@@ -217,12 +289,20 @@ void Render(){
 		glUniform1i(quadShader("color"),0);
 		glUniform1i(quadShader("bloom"),1);
 		glUniform1i(quadShader("useHDR"),useHdr);
+		glUniform1i(quadShader("useSSAO"),useSSAO);
+		glUniform1i(quadShader("onlySSAO"),onlySSAO);
+		glUniform1f(quadShader("exp"),exposition);
+		glUniform1f(quadShader("bMax"),bMax);
+		glUniform1f(quadShader("bloomStrength"),bloomStrength);
+		glUniform1f(quadShader("scale"),0.5);
 		glEnableVertexAttribArray(quadShader["vPosition"]);
 		glVertexAttribPointer(quadShader["vPosition"],  3, GL_FLOAT, GL_FALSE, sizeof(screenQuad), NULL);
 		glDrawArrays(GL_TRIANGLE_STRIP,0,4);
 	quadShader.UnUse();
 	glBindTexture(GL_TEXTURE_2D, NULL); 
 
+	// Draw tweak bars
+    TwDraw();
 
 	//Swap buffers
 	SDL_GL_SwapBuffers();
@@ -257,46 +337,57 @@ int main(int argc, char** argv) {
 	while(!done) 
 	{
 		SDL_Event event;
+		int handled;
 		myTimer.start();
 		//Respond to any events that occur
 		while(SDL_PollEvent(&event))
 		{
-			switch(event.type) 
-			{
-			case SDL_VIDEORESIZE:
-				onWindowResized(event.resize.w, event.resize.h);
-				break;
+			// Send event to AntTweakBar
+            handled = TwEventSDL(&event, SDL_MAJOR_VERSION, SDL_MINOR_VERSION);
+			if(!handled) {
+				switch(event.type) 
+				{
+				case SDL_VIDEORESIZE:
+					onWindowResized(event.resize.w, event.resize.h);
+					break;
 
-			case SDL_QUIT:
-				done = 1;
-				break;
-			case SDL_MOUSEMOTION :
-				if(event.motion.state & SDL_BUTTON_LMASK)
-				{
-					controlCamera->moved = true;
-					controlCamera->computeMatricesFromInputs();
-					controlCamera->moved = false;
+				case SDL_QUIT:
+					done = 1;
+					break;
+				case SDL_MOUSEMOTION :
+					if(event.motion.state & SDL_BUTTON_LMASK)
+					{
+						controlCamera->moved = true;
+						controlCamera->computeMatricesFromInputs();
+						controlCamera->moved = false;
+					}
+					break;
+				case SDL_KEYDOWN:
+					switch(event.key.keysym.sym)
+					{
+						case SDLK_ESCAPE:
+							done=1;
+							break;
+						case SDLK_KP_PLUS:
+							if(treshold <= 1.0) {treshold += 0.1;}
+							std::cout<<treshold<<std::endl;
+							break;
+						case SDLK_KP_MINUS:
+							if(treshold >= 0.2) {treshold -= 0.1;}
+							std::cout<<treshold<<std::endl;
+							break;
+						case SDLK_h:
+							useHdr = !useHdr;
+							break;
+						case SDLK_j:
+							onlySSAO = !onlySSAO;
+							break;
+						case SDLK_k:
+							useSSAO = !useSSAO;
+							break;
+					}
+					break;
 				}
-				break;
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.sym)
-				{
-					case SDLK_ESCAPE:
-						done=1;
-						break;
-					case SDLK_KP_PLUS:
-						if(treshold <= 1.0) {treshold += 0.1;}
-						std::cout<<treshold<<std::endl;
-						break;
-					case SDLK_KP_MINUS:
-						if(treshold >= 0.2) {treshold -= 0.1;}
-						std::cout<<treshold<<std::endl;
-						break;
-					case SDLK_h:
-						useHdr = !useHdr;
-						break;
-				}
-				break;
 			}
 		}
 
@@ -333,6 +424,11 @@ int main(int argc, char** argv) {
 	delete fboManager;
 	delete fboManagerBlur;
 	delete fboManagerBloomSsao;
+	//delete obj1;
+	delete sceneManager;
+	delete tmp;
+	// Terminate AntTweakBar
+    TwTerminate();
 	// Clean up and quit
 	SDL_Quit();
 	return 0;

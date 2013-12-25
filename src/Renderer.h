@@ -4,19 +4,23 @@
 // INCLUDES
 ///////////////////////////////////////////
 #include "GLSLshader/GLSLShader.h"
-#include "tmp_model/sphere.h"
 #include "screenQuad.h"
 #include "camera/controlCamera.h"
 #include "commonIncludes.h"
 #include "textureManager/textureManager.h"
 #include "fboManager/fboManager.h"
+#include "sceneManager.h"
+
+//Docasne
+#include "object.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
 #pragma comment(lib, "OpenGL32.lib")
 #pragma comment(lib, "glew32.lib")
-#pragma comment(lib, "assimp.lib")
+//#pragma comment(lib, "assimp.lib")
 #pragma comment(lib, "SDL_image.lib")
+#pragma comment(lib, "AntTweakBar.lib")
 #endif//_MSC_VER
 
 
@@ -40,24 +44,41 @@ unsigned width = 800;
 unsigned height = 600;
 bool useFrameRateCap = true;
 int FPS = 0;
-glm::vec3 lightPosition(.0,10.0,.0);
+glm::vec3 lightPosition(.0,10.0,2.0);
+
+//AntTweak bar
+TwBar *bar;
+double exposition = 1.0;
+double bMax = 1.2;
+double bloomStrength = 0.8;
+double treshold = 0.1;
+bool useHdr = true;
+bool useSSAO = true;
+bool onlySSAO = false;
+double totStrength = 2.8;
+double strength = 1.21;
+double offset = 20.0;
+double falloff = 0.00000001;
+double rad = 0.01;
+
 //shader variables
 string shaderDir = "../src/shaders/";
 GLSLShader simpleShader;
 GLSLShader quadShader;
 GLSLShader blurShader;
 GLSLShader bloomSsaoShader;
-unsigned int kernelSize = 32;
-float treshold = 0.1;
-bool useHdr = true;
+unsigned int kernelSize = 16;
+
 //Texture manager variables
 string textureDir = "../textures/";
 CTextureManager texManager;
 GLuint currentTexture;
+
 //FBO manager variables
 CFboManager * fboManager = new CFboManager();
 CFboManager * fboManagerBlur = new CFboManager();
 CFboManager * fboManagerBloomSsao = new CFboManager();
+
 //Camera variables
 CControlCamera* controlCamera = new CControlCamera();
 float mouseSpeed =  0.05f;
@@ -65,11 +86,16 @@ int _x,_y;
 bool moved = true;
 float movementSpeed = 0.75f;
 
+//Scene objects -TMP
+string objectDir = "../models/";
+CObject *tmp;
+
+//Scene manager
+CSceneManager * sceneManager = new CSceneManager();
+
 ///////////////////////////////////////////
-// TMP MODEL VARIABLES
+// SCREEN QUAD MODEL VARIABLES
 ///////////////////////////////////////////
-GLuint sphereVBO;
-GLuint sphereEBO;
 GLuint screenQuadVBO;
 
 ///////////////////////////////////////////

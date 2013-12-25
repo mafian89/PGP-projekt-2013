@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <AntTweakBar.h>
 
 #include <string>
 #include <exception>
@@ -19,5 +20,9 @@
 #include <iostream>
 #include <cmath>
 #include <map>
+#include <vector>
+
+#include "obj_loader/objloader.hpp"
+#include "obj_loader/vboindexer.hpp"
 
 #endif
