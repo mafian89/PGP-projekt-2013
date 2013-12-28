@@ -24,7 +24,7 @@ void main() {
 		kd = texture(myTexture,fUv).rgb;
 	}
 	ks = vec3(0.8,0.8,0.8);
-	vec3 ka = vec3(0.0,0.0,0.0);
+	vec3 ka = vec3(0.1,0.1,0.1);
 	vec3 tmpNormal = normalize(eyeNormal);
 	vec3 s = normalize(vec3(eyeLightPos - eyePosition));
 	vec3 v = normalize(-eyePosition);
