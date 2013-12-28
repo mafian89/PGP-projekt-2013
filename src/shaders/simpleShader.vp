@@ -13,6 +13,6 @@ void main() {
 	gl_Position = mvp*vec4(vPosition, 1.0);
 	eyePosition = (mv*vec4(vPosition,1)).xyz;
 	eyeNormal = normalize(mn*vNormal);
-	depth = -eyePosition.z;
+	depth = (-eyePosition.z - 0.1) / (100.0 - 0.1);
 	eyeLightPos = (mv*vec4(vLightPos,1)).xyz;
 }

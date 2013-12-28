@@ -26,7 +26,7 @@ void main() {
 	vec4 result = vec4(0.0);
 	vec3 bloomedSample = texture(bloom,texCoord*scale).rgb * bloomStrength;
 	float ssao = texture(bloom,texCoord*scale).a;
-	vec4 colorSample = texture(color,texCoord);
+	//vec4 colorSample = texture(color,texCoord);
 	float toneMap = exp * (exp / bMax + 1.0) / (exp + 1.0);
 	if(useHDR && useSSAO) {
         FragColor = ((texture(color, texCoord) + vec4(bloomedSample,1.0)) * toneMap) * ssao;
