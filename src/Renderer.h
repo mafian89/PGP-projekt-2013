@@ -59,7 +59,7 @@ double totStrength = 8.0;
 double strength = 10.0;
 double offset = 20.0;
 double falloff = 0.00000001;
-double rad = 0.050;
+double rad = 0.001;
 
 //shader variables
 string shaderDir = "../src/shaders/";
