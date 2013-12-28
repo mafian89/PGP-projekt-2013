@@ -86,7 +86,7 @@ void onInit() {
 	texManager.createTexture("floor",(textureDir + "floor.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("noise_tex",(textureDir + "noise.png"),0,0,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
-	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA32F,GL_RGBA);
+	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("blur_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("bloom_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("depth_tex","",width,height,GL_NEAREST,GL_DEPTH_COMPONENT32,GL_DEPTH_COMPONENT);
@@ -129,6 +129,7 @@ void onInit() {
 	////////////////////////////////////////////////////
 	tmp = new CObject(objectDir + "crates.obj");
 	tmp->setTexture(texManager["tex"]);
+	tmp->translateModel(glm::vec3(-5.0,0.0,3.0));
 	sceneManager->addObject(tmp);
 	tmp = new CObject(objectDir + "crates.obj");
 	tmp->setTexture(texManager["tex"]);
