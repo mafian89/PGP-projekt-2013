@@ -130,6 +130,7 @@ void onInit() {
 	tmp->setTexture(texManager["tex"]);
 	sceneManager->addObject(tmp);
 	tmp = new CObject(objectDir + "crates.obj");
+	tmp->setTexture(texManager["tex"]);
 	tmp->translateModel(glm::vec3(0.0,0.0,-10.0));
 	sceneManager->addObject(tmp);
 	//obj1 = new CObject(objectDir + "crates.obj");
