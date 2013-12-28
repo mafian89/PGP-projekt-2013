@@ -32,6 +32,9 @@ void onInit() {
 	simpleShader.Use();
 		simpleShader.AddAttribute("vPosition");
 		simpleShader.AddAttribute("vNormal");
+		simpleShader.AddAttribute("vUv");
+		simpleShader.AddUniform("myTexture");
+		simpleShader.AddUniform("hasTexture");
 		simpleShader.AddUniform("mvp");
 		simpleShader.AddUniform("mv");
 		simpleShader.AddUniform("mn");
@@ -79,7 +82,7 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
-	//texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("noise_tex",(textureDir + "noise.png"),0,0,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA32F,GL_RGBA);
@@ -123,7 +126,9 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// LOAD OBJECTS
 	////////////////////////////////////////////////////
-	sceneManager->addObject(new CObject(objectDir + "crates.obj"));
+	tmp = new CObject(objectDir + "crates.obj");
+	tmp->setTexture(texManager["tex"]);
+	sceneManager->addObject(tmp);
 	tmp = new CObject(objectDir + "crates.obj");
 	tmp->translateModel(glm::vec3(0.0,0.0,-10.0));
 	sceneManager->addObject(tmp);
@@ -211,12 +216,19 @@ void Render(){
 	simpleShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		for(int i = 0; i < sceneManager->scene.size(); i++) {
+			if(sceneManager->scene[i]->hasTexture()) {
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, sceneManager->scene[i]->getObjectTexture());
+			}
+
 			glm::mat4 m = sceneManager->scene[i]->getObjectModelMatrix();
 			glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix()*m)));
 			glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix()*m)); 
 			glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix()*m)); 
 			glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
 			glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
+			glUniform1i(simpleShader("hasTexture"), sceneManager->scene[i]->hasTexture());
+
 			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_VBO);
 			glEnableVertexAttribArray(simpleShader["vPosition"]);
 			glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -225,8 +237,13 @@ void Render(){
 			glEnableVertexAttribArray(simpleShader["vNormal"]);
 			glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_UVBO);
+			glEnableVertexAttribArray(simpleShader["vUv"]);
+			glVertexAttribPointer(simpleShader["vUv"],  2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sceneManager->scene[i]->_EBO);
 			glDrawElements(GL_TRIANGLES, sceneManager->scene[i]->getIndexSize(), GL_UNSIGNED_INT, NULL);
+			glBindTexture(GL_TEXTURE_2D,NULL);
 		}
 	simpleShader.UnUse();
 	glBindFramebuffer(GL_FRAMEBUFFER,0);

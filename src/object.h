@@ -20,6 +20,7 @@ public:
 	void translateModel(glm::vec3 _to);
 	void rotateModel(float _degrees, glm::vec3 _axis);
 
+	bool hasTexture();
 	unsigned int getIndexSize();
 	GLuint getObjectTexture();
 	glm::vec3 getObjetMaterial();
@@ -32,6 +33,7 @@ public:
 private:
 	GLuint _Texture;
 	glm::vec3 _material;
+	bool _textured;
 
 	unsigned int indexSize;
 
