@@ -92,11 +92,11 @@ void onInit() {
 	// FBO INIT
 	////////////////////////////////////////////////////
 	fboManager->initFbo();
-	//fboManager->genRenderBuffer(width,height);
-	//fboManager->bindRenderBuffer();
+	fboManager->genRenderBuffer(width,height);
+	fboManager->bindRenderBuffer();
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["render_tex"]);
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["normal_tex"]);
-	fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
+	//fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
 	fboManager->setDrawBuffers();
 	if(!fboManager->checkFboStatus()){
 		return;
