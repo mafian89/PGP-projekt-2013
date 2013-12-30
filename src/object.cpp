@@ -2,6 +2,7 @@
 
 CObject::CObject(){
 	m = glm::mat4(1.0);
+	_textured = false;
 }
 
 CObject::CObject(const string path){
@@ -12,6 +13,7 @@ CObject::CObject(const string path){
 		std::cout<<"[INFO] Object "<<path<<" has been successufully loaded!"<<std::endl;
 	}
 	m = glm::mat4(1.0);
+	_textured = false;
 	genBuffers();
 	fillBuffers();
 }
@@ -59,6 +61,11 @@ void CObject::fillBuffers(){
 
 void CObject::setTexture(GLuint _tex){
 	_Texture = _tex;
+	_textured = true;
+}
+
+bool CObject::hasTexture() {
+	return _textured;
 }
 
 void CObject::setMaterial(glm::vec3 _mat){

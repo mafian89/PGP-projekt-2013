@@ -32,6 +32,9 @@ void onInit() {
 	simpleShader.Use();
 		simpleShader.AddAttribute("vPosition");
 		simpleShader.AddAttribute("vNormal");
+		simpleShader.AddAttribute("vUv");
+		simpleShader.AddUniform("myTexture");
+		simpleShader.AddUniform("hasTexture");
 		simpleShader.AddUniform("mvp");
 		simpleShader.AddUniform("mv");
 		simpleShader.AddUniform("mn");
@@ -74,12 +77,14 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// CAMERA INIT
 	////////////////////////////////////////////////////
-	controlCamera->initControlCamera(glm::vec3(.0,.0,5.0),3.14,0.0,800,600,1.0,100.0);
+	controlCamera->initControlCamera(glm::vec3(.0,.0,5.0),3.14,0.0,800,600,0.1,1000.0);
 
 	////////////////////////////////////////////////////
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
-	//texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("susie",(textureDir + "susie.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("floor",(textureDir + "floor.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("noise_tex",(textureDir + "noise.png"),0,0,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
 	texManager.createTexture("normal_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
@@ -92,11 +97,11 @@ void onInit() {
 	// FBO INIT
 	////////////////////////////////////////////////////
 	fboManager->initFbo();
-	//fboManager->genRenderBuffer(width,height);
-	//fboManager->bindRenderBuffer();
+	fboManager->genRenderBuffer(width,height);
+	fboManager->bindRenderBuffer();
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,texManager["render_tex"]);
 	fboManager->bindToFbo(GL_COLOR_ATTACHMENT1,GL_TEXTURE_2D,texManager["normal_tex"]);
-	fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
+	//fboManager->bindToFbo(GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,texManager["depth_tex"]);
 	fboManager->setDrawBuffers();
 	if(!fboManager->checkFboStatus()){
 		return;
@@ -123,9 +128,22 @@ void onInit() {
 	////////////////////////////////////////////////////
 	// LOAD OBJECTS
 	////////////////////////////////////////////////////
-	sceneManager->addObject(new CObject(objectDir + "crates.obj"));
 	tmp = new CObject(objectDir + "crates.obj");
-	tmp->translateModel(glm::vec3(0.0,0.0,-10.0));
+	tmp->setTexture(texManager["tex"]);
+	tmp->translateModel(glm::vec3(-5.0,0.0,3.0));
+	sceneManager->addObject(tmp);
+	tmp = new CObject(objectDir + "crates.obj");
+	tmp->setTexture(texManager["tex"]);
+	tmp->translateModel(glm::vec3(5.0,0.0,-3.0));
+	tmp->rotateModel(45.0,glm::vec3(0.0,1.0,0.0));
+	sceneManager->addObject(tmp);
+	tmp = new CObject(objectDir + "plane.obj");
+	tmp->setTexture(texManager["floor"]);
+	tmp->translateModel(glm::vec3(0.0,-1.0,0.0));
+	sceneManager->addObject(tmp);
+	tmp = new CObject(objectDir + "monkey.obj");
+	tmp->setTexture(texManager["susie"]);
+	tmp->translateModel(glm::vec3(0.0,-1.0,0.0));
 	sceneManager->addObject(tmp);
 	//obj1 = new CObject(objectDir + "crates.obj");
 	//obj1->translateModel(glm::vec3(0.0,0.0,-2.0));
@@ -154,15 +172,15 @@ void onInit() {
 
 
 	TwAddVarRW(bar, "totStrength", TW_TYPE_DOUBLE, &totStrength, 
-               " label='totStrength' min=1.0 max=10.0 step=0.1 ");
+               " label='totStrength' min=1.0 max=20.0 step=0.1 ");
 	TwAddVarRW(bar, "strength", TW_TYPE_DOUBLE, &strength, 
-               " label='strength' min=0.0 max=2.0 step=0.01 ");
+               " label='strength' min=0.0 max=20.0 step=0.1 ");
 	TwAddVarRW(bar, "offset", TW_TYPE_DOUBLE, &offset, 
                " label='offset' min=1.0 max=40.0 step=1.0 ");
-	TwAddVarRW(bar, "falloff", TW_TYPE_DOUBLE, &falloff, 
-               " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
-	//TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
- //              " label='rad' min=0.0 max=5.0 step=0.005");
+	//TwAddVarRW(bar, "falloff", TW_TYPE_DOUBLE, &falloff, 
+ //              " label='falloff' min=0.00000001 max=0.000001 step=0.00000005");
+	TwAddVarRW(bar, "rad", TW_TYPE_DOUBLE, &rad, 
+               " label='rad' min=0.0 max=2.0 step=0.001");
 	/*TwAddVarRW(bar, "use SSAO", TW_TYPE_BOOL32, &useSSAO, 
             " label='SSAO' true='YES' false='NO' help='Turns on/off SSAO' ");
 	TwAddVarRW(bar, "only SSAO", TW_TYPE_BOOL32, &onlySSAO, 
@@ -211,12 +229,19 @@ void Render(){
 	simpleShader.Use();
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		for(int i = 0; i < sceneManager->scene.size(); i++) {
+			if(sceneManager->scene[i]->hasTexture()) {
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, sceneManager->scene[i]->getObjectTexture());
+			}
+
 			glm::mat4 m = sceneManager->scene[i]->getObjectModelMatrix();
 			glm::mat3 mn  = glm::transpose(glm::inverse(glm::mat3(controlCamera->getViewMatrix()*m)));
 			glUniformMatrix4fv(simpleShader("mvp"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getProjectionMatrix() * controlCamera->getViewMatrix()*m)); 
 			glUniformMatrix4fv(simpleShader("mv"), 1, GL_FALSE,  glm::value_ptr(controlCamera->getViewMatrix()*m)); 
 			glUniformMatrix3fv(simpleShader("mn"), 1, GL_FALSE,  glm::value_ptr(mn)); 
 			glUniform3f(simpleShader("vLightPos"),lightPosition.x,lightPosition.y, lightPosition.z);
+			glUniform1i(simpleShader("hasTexture"), sceneManager->scene[i]->hasTexture());
+
 			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_VBO);
 			glEnableVertexAttribArray(simpleShader["vPosition"]);
 			glVertexAttribPointer(simpleShader["vPosition"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -225,8 +250,13 @@ void Render(){
 			glEnableVertexAttribArray(simpleShader["vNormal"]);
 			glVertexAttribPointer(simpleShader["vNormal"],  3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+			glBindBuffer(GL_ARRAY_BUFFER, sceneManager->scene[i]->_UVBO);
+			glEnableVertexAttribArray(simpleShader["vUv"]);
+			glVertexAttribPointer(simpleShader["vUv"],  2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sceneManager->scene[i]->_EBO);
 			glDrawElements(GL_TRIANGLES, sceneManager->scene[i]->getIndexSize(), GL_UNSIGNED_INT, NULL);
+			glBindTexture(GL_TEXTURE_2D,NULL);
 		}
 	simpleShader.UnUse();
 	glBindFramebuffer(GL_FRAMEBUFFER,0);

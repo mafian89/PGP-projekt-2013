@@ -55,11 +55,11 @@ double treshold = 0.1;
 bool useHdr = true;
 bool useSSAO = true;
 bool onlySSAO = false;
-double totStrength = 2.8;
-double strength = 1.21;
+double totStrength = 1.5;
+double strength = 10.0;
 double offset = 20.0;
 double falloff = 0.00000001;
-double rad = 0.01;
+double rad = 0.001;
 
 //shader variables
 string shaderDir = "../src/shaders/";

@@ -1,8 +1,12 @@
 #version 150
 in vec3 eyePosition,eyeNormal,eyeLightPos;
-
+in float depth;
+in vec2 fUv;
 layout(location=0) out vec4 fragColor;
 layout(location=1) out vec4 normal;
+
+uniform bool hasTexture;
+uniform sampler2D myTexture;
 
 void main() {
 	float distance = length(eyeLightPos.xyz-eyePosition.xyz);
@@ -12,11 +16,15 @@ void main() {
 	vec3 ls = vec3(1.0,1.0,1.0);
 	vec3 la = vec3(1.0,1.0,1.0);
 
-	vec3 kd; 
+	vec3 kd;
 	vec3 ks;
+	if(!hasTexture) {
 		kd = vec3(1.0,1.0,1.0);
-		ks = vec3(0.8,0.8,0.8);
-	vec3 ka = vec3(0.0,0.0,0.0);
+	} else {
+		kd = texture(myTexture,fUv).rgb;
+	}
+	ks = vec3(0.8,0.8,0.8);
+	vec3 ka = vec3(0.1,0.1,0.1);
 	vec3 tmpNormal = normalize(eyeNormal);
 	vec3 s = normalize(vec3(eyeLightPos - eyePosition));
 	vec3 v = normalize(-eyePosition);
@@ -31,7 +39,7 @@ void main() {
 	vec3 lightIntesity = (ambient + diffuse + spec)*att;
 	fragColor = vec4(lightIntesity,1.0);
 	//NORMALY
-	normal = vec4(tmpNormal,v.z);
+	normal = vec4(tmpNormal,depth);
 	//SPEC SLOZKA
 	//fragColor = vec4(spec, 1.0);
 }

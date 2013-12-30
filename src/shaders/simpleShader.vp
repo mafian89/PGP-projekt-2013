@@ -1,8 +1,10 @@
 #version 150
 layout(location=0) in vec3 vPosition;
 layout(location=1) in vec3 vNormal;
-
+in vec2 vUv;
+out float depth;
 out vec3 eyePosition,eyeNormal,eyeLightPos;
+out vec2 fUv;
 
 uniform mat4 mvp;
 uniform mat3 mn;
@@ -13,5 +15,8 @@ void main() {
 	gl_Position = mvp*vec4(vPosition, 1.0);
 	eyePosition = (mv*vec4(vPosition,1)).xyz;
 	eyeNormal = normalize(mn*vNormal);
+	depth = (-eyePosition.z - 0.1) / (1000.0 - 0.1);
+	//depth = (-eyePosition.z) ;
+	fUv = vUv;
 	eyeLightPos = (mv*vec4(vLightPos,1)).xyz;
 }
