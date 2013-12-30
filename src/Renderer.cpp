@@ -83,6 +83,7 @@ void onInit() {
 	// TEXTURE INIT
 	////////////////////////////////////////////////////
 	texManager.createTexture("tex",(textureDir + "textura2.png"),width,height,GL_NEAREST,0,0);
+	texManager.createTexture("susie",(textureDir + "susie.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("floor",(textureDir + "floor.png"),width,height,GL_NEAREST,0,0);
 	texManager.createTexture("noise_tex",(textureDir + "noise.png"),0,0,GL_NEAREST,0,0);
 	texManager.createTexture("render_tex","",width,height,GL_NEAREST,GL_RGBA16F,GL_RGBA);
@@ -138,6 +139,10 @@ void onInit() {
 	sceneManager->addObject(tmp);
 	tmp = new CObject(objectDir + "plane.obj");
 	tmp->setTexture(texManager["floor"]);
+	tmp->translateModel(glm::vec3(0.0,-1.0,0.0));
+	sceneManager->addObject(tmp);
+	tmp = new CObject(objectDir + "monkey.obj");
+	tmp->setTexture(texManager["susie"]);
 	tmp->translateModel(glm::vec3(0.0,-1.0,0.0));
 	sceneManager->addObject(tmp);
 	//obj1 = new CObject(objectDir + "crates.obj");
