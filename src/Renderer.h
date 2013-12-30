@@ -117,7 +117,7 @@ SDL_Surface * init(unsigned width, unsigned height, unsigned color, unsigned dep
     if(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) < 0) throw SDL_Exception();
 
     // Create window
-    SDL_Surface * screen = SDL_SetVideoMode(width, height, color, SDL_OPENGL | SDL_RESIZABLE);
+    SDL_Surface * screen = SDL_SetVideoMode(width, height, color, SDL_OPENGL);
     if(screen == NULL) throw SDL_Exception();
     // Init extensions
     GLenum error = glewInit();
