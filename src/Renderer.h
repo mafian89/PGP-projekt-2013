@@ -11,9 +11,6 @@
 #include "fboManager/fboManager.h"
 #include "sceneManager.h"
 
-//Docasne
-#include "object.h"
-
 #ifdef _MSC_VER
 #pragma comment(lib, "SDL.lib")
 #pragma comment(lib, "OpenGL32.lib")
