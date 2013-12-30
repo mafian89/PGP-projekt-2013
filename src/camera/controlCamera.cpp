@@ -71,7 +71,7 @@ void CControlCamera::setUp(glm::vec3 _up){
 }
 
 void CControlCamera::initControlCamera(glm::vec3 _pos, float _horAngle = 3.14f, float _verAngle = 0.0f, 
-										unsigned _width = 800, unsigned _height = 600, float ncp = 1.0f, float fcp = 100.0) {
+										unsigned _width = 800, unsigned _height = 600, float ncp = 0.1f, float fcp = 1000.0) {
     this->position = _pos;
     this->initial_position = this->position;
     this->horizontalAngle = _horAngle;

@@ -24,7 +24,7 @@ void main(){
 	tmp = tmp/(kernelSize*kernelSize);
 	
 	float tmpA = 1.0;
-	int tmp_kernel = 8;
+	int tmp_kernel = 4;
 	for(int i=-(tmp_kernel/2); i < (tmp_kernel/2); i++){
 		for(int j=-(tmp_kernel/2); j < (tmp_kernel/2); j++) {
 			//blurredFragment += texture(render_tex,vec2(texCoord.x+i*stepx, texCoord.y+j*stepy));
