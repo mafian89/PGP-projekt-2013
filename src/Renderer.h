@@ -55,7 +55,7 @@ bool onlySSAO = false;
 double totStrength = 1.5;
 double strength = 10.0;
 double offset = 20.0;
-double falloff = 0.00000001;
+double falloff = 0.000001;
 double rad = 0.001;
 
 //shader variables
